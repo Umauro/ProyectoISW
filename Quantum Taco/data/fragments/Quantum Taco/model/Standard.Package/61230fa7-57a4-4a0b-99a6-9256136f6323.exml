@@ -1,0 +1,35 @@
+<?xml version="1.0" ?>
+<!--GENERATED FILE, PLEASE DO NOT EDIT!!!--><EXT object="quantum taco" version="4">
+  <OBJECT>
+    <ID name="quantum taco" mc="Standard.Package" uid="61230fa7-57a4-4a0b-99a6-9256136f6323"/>
+    <PID name="Quantum Taco" mc="Standard.Project" uid="6a839209-8bea-4a16-8bc3-6554295aa3ec"/>
+    <ATTRIBUTES>
+      <ATT name="IsInstantiable">false</ATT>
+      <ATT name="IsAbstract">false</ATT>
+      <ATT name="IsLeaf">false</ATT>
+      <ATT name="IsRoot">false</ATT>
+      <ATT name="Visibility">Public</ATT>
+      <ATT name="Name"><![CDATA[quantum taco]]></ATT>
+      <ATT name="status">1970354901745664</ATT>
+    </ATTRIBUTES>
+    <DEPENDENCIES>
+      <COMP relation="OwnedElement">
+        <COMPID name="Experto" mc="Standard.Actor" uid="e2923454-edf6-4247-b185-c9576453357a"/>
+        <COMPID name="Buscar" mc="Standard.UseCase" uid="d4d93548-366b-4614-aa5d-e19b06adfb5b"/>
+        <COMPID name="Ver resultados" mc="Standard.UseCase" uid="50020763-feb7-48d8-ac33-00a336a6ee79"/>
+        <COMPID name="Reportar resultado" mc="Standard.UseCase" uid="adf4ed46-6054-43b5-8d83-d1bf523638ad"/>
+        <COMPID name="Gestionar lista negra" mc="Standard.UseCase" uid="d9b3d625-78ed-4e4c-a0bd-1474cfa1a47b"/>
+        <COMPID name="Fuente" mc="Standard.Class" uid="3e5650e7-cfea-47b2-99c7-563b491430de"/>
+        <COMPID name="Página" mc="Standard.Class" uid="5f824c2d-e81d-4279-aab1-efd4a865617e"/>
+        <COMPID name="Herramienta de aprendizaje" mc="Standard.Class" uid="780b924a-d395-4e8f-927c-17c07b454ea1"/>
+        <COMPID name="Ejercicio" mc="Standard.Class" uid="0a081279-8594-4871-ba40-ca4b2c13756b"/>
+        <COMPID name="Materia" mc="Standard.Class" uid="cdf9c02e-1439-428d-a695-d45310faa32d"/>
+        <COMPID name="Gráfico" mc="Standard.Class" uid="af3d9e7e-a9ae-4694-a96e-49d3f1212cb8"/>
+      </COMP>
+      <COMP relation="Product">
+        <COMPID name="quantum taco Use Case diagram" mc="Standard.UseCaseDiagram" uid="6bdc311b-dc05-4412-90e5-6dbbe6611b43"/>
+        <COMPID name="quantum taco Class diagram" mc="Standard.ClassDiagram" uid="d7725b42-e16b-4c2e-b11a-ab622a168327"/>
+      </COMP>
+    </DEPENDENCIES>
+  </OBJECT>
+</EXT>
