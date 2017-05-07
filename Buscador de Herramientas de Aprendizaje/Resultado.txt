@@ -1,0 +1,15 @@
+http://hyperphysics.phy-astr.gsu.edu/hbase/electric/imgele/efie.gif
+http://hyperphysics.phy-astr.gsu.edu/hbase/electric/imgele/efiedef.gif
+http://hyperphysics.phy-astr.gsu.edu/hbase/electric/imgele/elefie2.gif
+http://hyperphysics.phy-astr.gsu.edu/hbase/electric/imgele/elefie3.gif
+http://hyperphysics.phy-astr.gsu.edu/hbase/electric/imgele/emcons.gif
+http://hyperphysics.phy-astr.gsu.edu/hbase/electric/imgele/emcons2.gif
+http://hyperphysics.phy-astr.gsu.edu/hbase/electric/imgele/emcons2b.gif
+http://hyperphysics.phy-astr.gsu.edu/hbase/electric/imgele/emcons3.gif
+http://hyperphysics.phy-astr.gsu.edu/hbase/electric/imgele/emcons4.gif
+http://hyperphysics.phy-astr.gsu.edu/hbase/electric/imgele/emcons2.gif
+http://hyperphysics.phy-astr.gsu.edu/hbase/electric/imgele/emwavc.gif
+http://hyperphysics.phy-astr.gsu.edu/hbase/electric/imgele/epermc.gif
+http://hyperphysics.phy-astr.gsu.edu/hbase/electric/imgele/bperml.gif
+https://upload.wikimedia.org/wikipedia/commons/thumb/3/3a/Volta_batteries.jpg/220px-Volta_batteries.jpg
+https://upload.wikimedia.org/wikipedia/commons/thumb/a/a6/Digital_Multimeter_Aka.jpg/200px-Digital_Multimeter_Aka.jpg
