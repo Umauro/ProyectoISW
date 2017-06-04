@@ -1,6 +1,11 @@
 import tkinter as tk                # python 3
 from tkinter import font  as tkfont # python 3
 from tkinter.scrolledtext import ScrolledText
+import url_Obtainer
+import query
+from scrapy.crawler import CrawlerProcess
+from scrapy.utils.project import get_project_settings
+process = CrawlerProcess(get_project_settings())
 
 class Aplicacion(tk.Tk):
 
@@ -36,6 +41,31 @@ class Aplicacion(tk.Tk):
             #===================================================================
             #Aqui se debe buscar materia y dejarla en txt
             #===================================================================
+            #===================================================================
+            #Inicio Busqueda de materia
+            #===================================================================
+            
+            db = query.query()
+            db.conectar()
+            rows = db.select(tabla='Confiable')
+            db.desconectar()
+            listaConfiable = []
+
+            for row in rows:
+                a, b, c = row
+                listaConfiable.append(b)
+
+
+            url = url_Obtainer.urlObtainer(listaConfiable)
+            listaUrl = url.urlGetter(campo)
+            process = CrawlerProcess(get_project_settings())
+            process.crawl('tablas', start_urls = listaUrl)
+            process.start()
+
+            #===================================================================
+            #FIN Busqueda de materia
+            #===================================================================
+
             frame = self.frames["materia"]
             frame.mostrar()
         else:
@@ -146,4 +176,3 @@ class PageTwo(tk.Frame):
 
 app = Aplicacion()
 app.mainloop()
-
