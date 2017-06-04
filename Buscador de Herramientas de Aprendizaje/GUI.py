@@ -1,6 +1,10 @@
 import tkinter as tk                # python 3
 from tkinter import font  as tkfont # python 3
 from tkinter.scrolledtext import ScrolledText
+
+from urllib.request import urlopen
+import base64
+
 import url_Obtainer
 import query
 from scrapy.crawler import CrawlerProcess, CrawlerRunner
@@ -28,7 +32,7 @@ class Aplicacion(tk.Tk):
         container.grid_columnconfigure(0, weight=1)
 
         self.frames = {}
-        for F in (menuPrincipal, materia, PageTwo):
+        for F in (menuPrincipal, materia, imagenes):
             page_name = F.__name__
             frame = F(parent=container, controller=self)
             self.frames[page_name] = frame
@@ -75,9 +79,17 @@ class Aplicacion(tk.Tk):
 
             frame = self.frames["materia"]
             frame.mostrar()
+        elif tipo[0]==1:#Caso de imagenes
+            frame = self.frames["imagenes"]
+            frame.mostrar()
         else:
             #Se deben resetear los campos de los otros frames antes de volver
             self.frames["materia"].texto.delete("1.0", tk.END)
+
+            for panel, titulo, url in self.frames["imagenes"].encontrados:
+                panel.pack_forget()
+                titulo.pack_forget()
+
             frame = self.frames["menuPrincipal"]
         frame.tkraise()
     def reportarFalsoPositivo(self, Dominio=None, Titulo=None, TipoHerramienta=None):
@@ -86,6 +98,7 @@ class Aplicacion(tk.Tk):
         #Aqui se debe hacer coneccion a base de datos y añadir lo seleccionado
         #=======================================================================
 
+        ###PROBABLEMENTE AQUI HAY QUE HACER IFS PARA QUE DADO EL TIPO DE HERRAMIENTA SE HAGA UNA CONSULTA SQL DISTINTA
         db = query.query()
         db.conectar()
         db.insert(tabla='ListaNegra', stringBusqueda=self.frames['menuPrincipal'].entrada.get(), dominio = str(Dominio), titulo = str(Titulo), tipoHerramienta = str(TipoHerramienta))
@@ -155,7 +168,7 @@ class materia(tk.Frame):
                  if '===' in linea:
                      anterior = string
                      fuente = linea.split(" ")[1].strip()
-                     string+="===Resultado numero "+str(i)+", fuente: "+fuente+"\n"
+                     string+="===Resultado numero "+str(i)+", fuente: "+fuente+"===\n"
                      deboVerSig = True
                      deboIgnorar = False
                  elif deboVerSig:
@@ -183,11 +196,11 @@ class materia(tk.Frame):
                      string+=linea
 
              #A este punto ya tenemos todos los encontrados
-             
+
          #DEFINICION DEL SPINBOX DE REPORTES
          if self.spinbox==None:
              self.spinbox = tk.Spinbox(self, values=tuple(range(1, len(encontrados)+1)), font=self.controller.regular_font)
-             self.textoFalsoPositivo = tk.Label(self, text="Algún problema? reporte falsos positivos seleccionando el numero.", font=self.controller.regular_font)
+             self.textoFalsoPositivo = tk.Label(self, text="Algún problema? reporte falsos positivos seleccionando el número.", font=self.controller.regular_font)
 
              self.botonEnviarReporte = tk.Button(self, text="Enviar", font= self.controller.regular_font,
                                   command=lambda: self.controller.reportarFalsoPositivo( encontrados[int(self.spinbox.get())-1][0] , encontrados[int(self.spinbox.get())-1][1] , "materia") )
@@ -200,16 +213,99 @@ class materia(tk.Frame):
          self.spinbox.pack()
          self.botonEnviarReporte.pack(padx=10, pady=10)
 
-class PageTwo(tk.Frame):
+
+class imagenes(tk.Frame):
 
     def __init__(self, parent, controller):
         tk.Frame.__init__(self, parent)
         self.controller = controller
-        label = tk.Label(self, text="This is page 2", font=controller.title_font)
+        label = tk.Label(self, text="Imagenes", font=controller.title_font)
         label.pack(side="top", fill="x", pady=10)
-        button = tk.Button(self, text="Go to the start page",
-                           command=lambda: controller.show_frame("StartPage"))
-        button.pack()
+
+        self.encontrados = list()
+        self.spinbox = None
+
+        self.canvas = tk.Canvas(self, borderwidth=0, background="#ffffff")
+        self.frameCanvas = tk.Frame(self.canvas, background="#ffffff")
+        self.canvas.create_window((4,4), anchor="nw" ,window=self.frameCanvas)
+        self.vsb = tk.Scrollbar(self, orient="vertical", command=self.canvas.yview)
+        self.canvas.configure(yscrollcommand=self.vsb.set)
+        self.frameCanvas.bind("<Configure>", self.onFrameConfigure)
+
+        self.botonRegreso = tk.Button(self, text="Volver al inicio", font= controller.regular_font,
+                           command=lambda: controller.show_frame("menuPrincipal"))
+    """
+        self.canvas = tk.Canvas(controller, borderwidth=0, background="#ffffff")
+        self.frame = tk.Frame(self.canvas, background="#ffffff")
+        self.vsb = tk.Scrollbar(controller, orient="vertical", command=self.canvas.yview)
+        self.canvas.configure(yscrollcommand=self.vsb.set)
+        self.canvas.create_window((4,4), window=self.frame, anchor="nw",
+                                  tags="self.frame")
+
+        self.frame.bind("<Configure>", self.onFrameConfigure)
+
+        self.botonRegreso = tk.Button(self, text="Volver al inicio", font= controller.regular_font,
+                           command=lambda: controller.show_frame("menuPrincipal"))
+
+    """
+    def onFrameConfigure(self, event):
+        '''Reset the scroll region to encompass the inner frame'''
+        self.canvas.configure(scrollregion=self.canvas.bbox("all"))
+
+    def mostrar(self):
+        self.vsb.pack(side="right", fill="y")
+        self.canvas.pack(side="top", fill="both", expand=True)
+        self.botonRegreso.pack(side="left" ,padx=10, pady=5)
+
+        #=======================================================================
+        #Se inicio proceso de carga de imagenes
+        #=======================================================================
+        self.encontrados = list()
+        i=1
+        with open('Resultados/Imagenes.txt', 'r') as archivo:
+            for linea in archivo:
+                puedoAgregarlo=True
+                try:
+                    #===========================================================
+                    #Ver aca si este url ta bloqueado
+                    #===========================================================
+                    #rows = lo de la query
+                    #
+                    #if linea.strip() in rows:
+                    #    puedoAgregarlo=False
+                    #
+                    #===========================================================
+
+                    if puedoAgregarlo:
+                        image_byt = urlopen(linea.strip()).read()
+                        image_b64 = base64.encodestring(image_byt)
+                        photo = tk.PhotoImage(data=image_b64)
+                        panel = tk.Label(self.frameCanvas, image = photo)
+                        panel.image = photo
+
+                        titulo = tk.Text(self.frameCanvas, font=self.controller.regular_font,  wrap='word', height= 2, width= 100)
+                        string = "===Resultado numero "+str(i)+"===\nFuente: "+linea.strip()+"\n"
+                        titulo.insert(tk.END, string)
+
+                        titulo.pack(padx=10)
+                        panel.pack(padx=10, pady=10)
+                        self.encontrados.append( (panel, titulo, linea.strip()) ) # obj, obj, url
+                        i+=1
+                except tk.TclError:
+                    print("No se pudo visualizar la imagen")
+
+        #DEFINICION DEL SPINBOX DE REPORTES
+        if self.spinbox==None:
+            self.spinbox = tk.Spinbox(self, values=tuple(range(1, len(self.encontrados)+1)), font=self.controller.regular_font)
+            self.textoFalsoPositivo = tk.Label(self, text="Algún problema? reporte falsos positivos seleccionando el número.", font=self.controller.regular_font)
+
+            self.botonEnviarReporte = tk.Button(self, text="Enviar", font= self.controller.regular_font,
+                                 command=lambda: self.controller.reportarFalsoPositivo( encontrados[int(self.spinbox.get())-1][2] , None , "imagenes") )
+                                 ###VER LA FUNCION LAMBDA PARA QUE EFECTIVAMENTE META LO NECESARIO PARA REPORTAR LA IMAGEN
+        self.textoFalsoPositivo.pack()
+        self.spinbox.pack()
+        self.botonEnviarReporte.pack(padx=10, pady=10)
 
 app = Aplicacion()
+app.geometry("1280x720")
 app.mainloop()
