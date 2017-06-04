@@ -10,6 +10,7 @@ import query
 from scrapy.crawler import CrawlerProcess, CrawlerRunner
 from scrapy.utils.project import get_project_settings
 from BuscadordeHerramientasdeAprendizaje.spiders.tabla_spider import tablasSpider
+from BuscadordeHerramientasdeAprendizaje.spiders.test_spider import imagenSpider
 
 from scrapy.utils.log import configure_logging
 from twisted.internet import reactor
@@ -79,7 +80,34 @@ class Aplicacion(tk.Tk):
 
             frame = self.frames["materia"]
             frame.mostrar()
+
         elif tipo[0]==1:#Caso de imagenes
+            #===================================================================
+            #Inicio Busqueda de imágenes
+            #===================================================================
+            """
+            db = query.query()
+            db.conectar()
+            rows = db.select(tabla='Confiable')
+            db.desconectar()
+            listaConfiable = []
+
+            for row in rows:
+                a, b, c = row
+                listaConfiable.append(b)
+
+
+            url = url_Obtainer.urlObtainer(listaConfiable)
+            listaUrl = url.urlGetter(campo)
+            configure_logging()
+            runner = CrawlerRunner().create_crawler(imagenSpider)
+            d = runner.crawl(imagenSpider, start_urls = listaUrl)
+            d.addBoth(lambda _: reactor.crash())
+            reactor.run()
+            """
+            #===================================================================
+            #FIN Busqueda de imágenes
+            #===================================================================
             frame = self.frames["imagenes"]
             frame.mostrar()
         else:
@@ -99,11 +127,18 @@ class Aplicacion(tk.Tk):
         #=======================================================================
 
         ###PROBABLEMENTE AQUI HAY QUE HACER IFS PARA QUE DADO EL TIPO DE HERRAMIENTA SE HAGA UNA CONSULTA SQL DISTINTA
-        db = query.query()
-        db.conectar()
-        db.insert(tabla='ListaNegra', stringBusqueda=self.frames['menuPrincipal'].entrada.get(), dominio = str(Dominio), titulo = str(Titulo), tipoHerramienta = str(TipoHerramienta))
-        db.desconectar()
+        if(TipoHerramienta == "materia"):
+            db = query.query()
+            db.conectar()
+            db.insert(tabla='ListaNegra', stringBusqueda=self.frames['menuPrincipal'].entrada.get(), dominio = str(Dominio), titulo = str(Titulo), tipoHerramienta = str(TipoHerramienta))
+            db.desconectar()
 
+        elif(TipoHerramienta == "imagenes"):
+            db = query.query()
+            db.conectar()
+            db.insert(tabla='ListaNegraImagen', stringBusqueda=self.frames['menuPrincipal'].entrada.get(), dominio = str(Dominio), tipoHerramienta = str(TipoHerramienta))
+            print("INSERTÉ ALGO")
+            db.desconectar()
 
         #=======================================================================
         #Fin añadir lo seleccionado
@@ -263,16 +298,24 @@ class imagenes(tk.Frame):
         self.encontrados = list()
         i=1
         with open('Resultados/Imagenes.txt', 'r') as archivo:
+            db = query.query()
+            db.conectar()
+            rows = db.select("Dominio, tipoHerramienta", "WHERE StringBusqueda =\""+self.controller.frames['menuPrincipal'].entrada.get()+"\" AND tipoHerramienta = \"imagenes\"", tabla='ListaNegraImagen')
+            db.desconectar()
+            rows = set(rows)
+            
             for linea in archivo:
                 puedoAgregarlo=True
                 try:
                     #===========================================================
                     #Ver aca si este url ta bloqueado
                     #===========================================================
+
                     #rows = lo de la query
                     #
-                    #if linea.strip() in rows:
-                    #    puedoAgregarlo=False
+                    print(linea.strip())
+                    if((linea.strip(),'imagenes') in rows):
+                        puedoAgregarlo=False
                     #
                     #===========================================================
 
@@ -300,7 +343,7 @@ class imagenes(tk.Frame):
             self.textoFalsoPositivo = tk.Label(self, text="Algún problema? reporte falsos positivos seleccionando el número.", font=self.controller.regular_font)
 
             self.botonEnviarReporte = tk.Button(self, text="Enviar", font= self.controller.regular_font,
-                                 command=lambda: self.controller.reportarFalsoPositivo( encontrados[int(self.spinbox.get())-1][2] , None , "imagenes") )
+                                 command=lambda: self.controller.reportarFalsoPositivo( self.encontrados[int(self.spinbox.get())-1][2] , None , "imagenes") )
                                  ###VER LA FUNCION LAMBDA PARA QUE EFECTIVAMENTE META LO NECESARIO PARA REPORTAR LA IMAGEN
         self.textoFalsoPositivo.pack()
         self.spinbox.pack()

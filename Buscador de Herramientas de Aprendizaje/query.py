@@ -36,6 +36,10 @@ class query():
                 querySql = "INSERT INTO " + kwargs['tabla'] +"(StringBusqueda, Dominio, Titulo, tipoHerramienta) VALUES(\'"+kwargs['stringBusqueda']+"\',\'"+ kwargs['dominio'] +"\',\'"+ kwargs['titulo'] +"\',\'" + kwargs['tipoHerramienta'] + "\');"
                 self.cur.execute(querySql)
                 self.con.commit()
+            elif(kwargs['tabla'] == 'ListaNegraImagen'):
+                querySql = "INSERT INTO " + kwargs['tabla'] +"(StringBusqueda, Dominio, tipoHerramienta) VALUES(\'"+kwargs['stringBusqueda']+"\',\'"+ kwargs['dominio'] +"\',\'"+ kwargs['tipoHerramienta'] + "\');"
+                self.cur.execute(querySql)
+                self.con.commit()
 
         except AttributeError:
             print("Error en la cantidad de atributos")
@@ -47,6 +51,8 @@ class query():
             print("Error con la base de datos"+str(lite.DatabaseError[0]))
         except KeyError:
             print("Parámetro no encontrado")
+        except lite.IntegrityError:
+            print("Registro ya ingresado en la base de datos")
 
 
 
