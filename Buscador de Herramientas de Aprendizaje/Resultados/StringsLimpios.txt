@@ -1,0 +1,39 @@
+
+===Fuente: http://hyperphysics.phy-astr.gsu.edu/hbasees/electric/elecur.html
+Corriente Eléctrica
+ 
+La corriente eléctrica es la tasa de flujo de carga que pasa por un determinado punto de un circuito eléctrico, medido en Culombios/segundo, denominado Amperio. En la mayoría de los circuitos eléctrico de DC, se puede asumir que la resistencia al flujo de la corriente es una constante, de manera que la corriente en el circuito está relacionada con el voltaje y la resistencia, por medio de la ley de Ohm. Las abreviaciones estándares para esas unidades son 1 A = 1 C/s. 
+
+
+
+   
+   
+
+   
+Vista Microscópica de la Corriente Eléctrica
+Medición con Amperímetro
+Dirección Convencional de la Corriente Eléctrica
+Vista Microscópica de la Corriente EléctricaMedición con AmperímetroDirección Convencional de la Corriente EléctricaÍndiceCircuitos Eléctricos HyperPhysics*****Electricidad y MagnetismoM Olmo R NaveHyperPhysics*****Electricidad y MagnetismoM Olmo R NaveAtrás
+===Fuente: http://hyperphysics.phy-astr.gsu.edu/hbasees/electric/elecur.html
+Carga Eléctrica
+ 
+La unidad de carga eléctrica es el Culombio (abreviado C). La materia ordinaria está hecha de átomos que tienen un núcleo cargado positivamente y electrones cargados negativamente rodeando al núcleo. La carga está cuantizada en múltiplo de la carga del electrón o protón:
+
+
+
+Las influencias de las cargas están caracterizadas en función de las fuerzas entre ellas (ley de Coulomb), y el campo eléctrico y el voltaje producidos por ellas. Un Culombio de carga es la carga que fluiría a través de una lámpara de 120 vatios (120 voltios de AC) en un segundo. ¡Dos cargas de un Culombio cada una, separada por una distancia de un metro, se repelerán entre ellas con una fuerza de alrededor de 1 millón de toneladas!
+ La tasa de flujo de la corriente eléctrica se llama intensidad de corriente y se mide en Amperios.
+En la introducción de una de las propiedades fundamentales de la materia, es oportuno señalar que, aunque utilizamos esquemas y montajes simplificados para introducir los conceptos, hay inevitablemente mucho mas que decir. No hay ningún significado añadido a los círculos que representan el protón y el electrón, en el sentido de atribuirle tamaños relativos e incluso objetos materiales sólidos de forma esférica, solo son una representación útil de conceptos. La idea mas importante es que estos tiene desde el punto de vista eléctrico una propiedad llamada "carga", que es del mismo tamaño o valor pero de polaridad opuesta entre el electrón y el protón. El protón tiene una masa 1.836 veces mayor que la masa del electrón, pero una carga exactamente de igual tamaño al electrón, solo que es positiva en vez de negativa. Incluso los términos "positivo" y "negativo", son arbitrarios aunque bien arraigados términos históricos. El comportamiento esencial es que el protón y el electrón se atraen fuertemente; el histórico arquetipo de "los polos opuestos se atraen". 
+Dos protones o dos electrones se repelerán fuertemente entre sí. Una vez que Ud. haya establecido esas ideas básicas de la electricidad de "cargas iguales se repelen, cargas opuestas se atraen", ya tiene el fundamento para la electricidad y puede ampliarse a partir de ahí.
+A partir de la precisa neutralidad de la materia ordinaria, así como de detallados experimentos microscópicos, sabemos que el protón y el electrón tiene la misma magnitud de carga. Todas las cargas observadas en la Naturaleza, son múltiplos de estas cargas fundamentales. Aunque el modelo estándar del protón, se representa construido por partículas de carga fraccionaria llamadas quarks, esas cargas fraccionarias no han sido observadas aisladamente, sino siempre en combinaciones que producen +/- la carga del electrón.
+Una simple carga eléctrica aislada se llama "monopolo eléctrico". Dos cargas iguales, una positiva y otra negativa, colocadas cerca una de la otra, constituye un dipolo eléctrico. Dos dipolos orientados opuestamente y cerca uno del otro, constituye un cuadrupolo eléctrico. Puede continuar este proceso, para cualquier número de polos, pero aquí se mencionan solo los dos primeros, porque estos encuentran significativas aplicaciones en fenómenos físicos. 
+Una de las simetrias fundamentales de la Naturaleza es la conservación de la carga eléctrica. Ningún proceso físico produce una cambio neto de carga eléctrica. 
+ÍndiceLey de CoulombFuerza Electromagnética HyperPhysics*****Electricidad y MagnetismoM Olmo R NaveHyperPhysics*****Electricidad y MagnetismoM Olmo R NaveAtrás
+===Fuente: http://hyperphysics.phy-astr.gsu.edu/hbasees/electric/elecur.html
+Corriente Eléctrica Convencional
+ 
+Aunque los electrones son los portadores de carga móviles, responsables de la corriente eléctrica en los conductores tales como los cables, se ha establecido la convención de tomar la dirección de la corriente eléctrica, como si las que se movieran fueran las cargas positivas. Algunos textos, invierten esta convención y toma la corriente eléctrica como la dirección del movimiento de electrones, y esto es obviamente una dirección física mas realista, pero la gran mayoría de referencias toma la dirección de corriente convencional y en la mayor parte de este material, se va a seguir esa convención. En aplicaciones comunes, tales como la determinación de la dirección de una fuerza sobre un cable con corriente, el actual tratamiento como movimiento de cargas positivas o movimiento de cargas negativas, da resultados idénticos. Además de la ventaja del acuerdo con la mayoría de los textos, la dirección de corriente convencional, es la dirección desde alto voltaje a bajo voltaje, de alta energía a baja energía, y por tanto tiene cierto atractivo en su paralelo con el flujo del agua desde alta presión a baja presión (ver analogía del agua). 
+
+
+
+ÍndiceCircuitos Eléctricos HyperPhysics*****Electricidad y MagnetismoM Olmo R NaveHyperPhysics*****Electricidad y MagnetismoM Olmo R NaveAtrás
