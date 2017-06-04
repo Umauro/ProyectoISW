@@ -42,14 +42,13 @@ class Aplicacion(tk.Tk):
 
     def show_frame(self, tipo=None, campo=None):
         if tipo[0]==0: #Materia
-            #===================================================================
-            #Aqui se debe buscar materia y dejarla en txt
-            #===================================================================
-
+            #Se debe borrar (dejar en blanco) cualquier txt previo
+            with open('Resultados/Materia.txt', 'w') as archivo:
+                pass
             #===================================================================
             #Inicio Busqueda de materia
             #===================================================================
-
+            '''
             db = query.query()
             db.conectar()
             rows = db.select(tabla='Confiable')
@@ -65,8 +64,9 @@ class Aplicacion(tk.Tk):
             listaUrl = url.urlGetter(campo)
             configure_logging()
             runner = CrawlerRunner().create_crawler(tablasSpider)
-            runner.crawl(tablasSpider, start_urls = listaUrl)
-
+            d = runner.crawl(tablasSpider, start_urls = listaUrl)
+            d.addBoth(lambda _: reactor.crash())
+            reactor.run()'''
 
 
             #===================================================================
@@ -76,6 +76,8 @@ class Aplicacion(tk.Tk):
             frame = self.frames["materia"]
             frame.mostrar()
         else:
+            #Se deben resetear los campos de los otros frames antes de volver
+            self.frames["materia"].texto.delete("1.0", tk.END)
             frame = self.frames["menuPrincipal"]
         frame.tkraise()
     def reportarFalsoPositivo(self, Dominio=None, Titulo=None, TipoHerramienta=None):
@@ -125,7 +127,6 @@ class materia(tk.Frame):
 
 
 
-
         self.button = tk.Button(self, text="Volver al inicio", font= controller.regular_font,
                            command=lambda: controller.show_frame("menuPrincipal"))
         self.spinbox = None
@@ -136,22 +137,27 @@ class materia(tk.Frame):
          #======================================================================
          i=1
          encontrados=list()
-         string=""
+         string = ""
          deboVerSig=False
+         deboIgnorar=False
          with open('Resultados/StringsLimpios.txt', 'r') as archivo:
              #==================================================================
              #Query Sql de lista negra
              #==================================================================
-             
+
              db = query.query()
              db.conectar()
-             rows = db.select("Dominio, Titulo", "WHERE StringBusqueda =\""+app.frames['menuPrincipal'].entrada.get()+"\" AND tipoHerramienta = \"materia\"", tabla='ListaNegra')
+             rows = db.select("Dominio, Titulo", "WHERE StringBusqueda =\""+self.controller.frames['menuPrincipal'].entrada.get()+"\" AND tipoHerramienta = \"materia\"", tabla='ListaNegra')
+             print("LO ENCONTRADO EN LA LISTA NEGRA ES", rows)
+             rows = set(rows)
 
              for linea in archivo:
                  if '===' in linea:
+                     anterior = string
                      fuente = linea.split(" ")[1].strip()
-                     string+="===Objeto numero "+str(i)+", fuente: "+fuente+"\n"
+                     string+="===Resultado numero "+str(i)+", fuente: "+fuente+"\n"
                      deboVerSig = True
+                     deboIgnorar = False
                  elif deboVerSig:
                      titulo = linea.strip()
                      encontrados.append( (fuente, titulo) )
@@ -162,20 +168,25 @@ class materia(tk.Frame):
                      #==========================================================
                      if(len(rows) != 0):
                          if((fuente, titulo) in rows):
-                             #Hace tu la magia panchito
-                             #a[:a.rfind('\n')]
+                             print("==SE DETECTO UN RESULTADO BLOQUEADO==")
 
-                 else:
+                             #Se procede a restaurar el string antes del falso positivo
+                             string = anterior
+
+                             print(string)
+                             del encontrados[-1]
+                             deboIgnorar = True
+                         else:
+                             i+=1
+
+                 elif deboIgnorar==False:
                      string+=linea
 
-
-             #string=archivo.read()
-
-             print(encontrados)
-
+             #A este punto ya tenemos todos los encontrados
+             
          #DEFINICION DEL SPINBOX DE REPORTES
          if self.spinbox==None:
-             self.spinbox = tk.Spinbox(self, from_=1, to=len(encontrados), font=self.controller.regular_font)
+             self.spinbox = tk.Spinbox(self, values=tuple(range(1, len(encontrados)+1)), font=self.controller.regular_font)
              self.textoFalsoPositivo = tk.Label(self, text="Algún problema? reporte falsos positivos seleccionando el numero.", font=self.controller.regular_font)
 
              self.botonEnviarReporte = tk.Button(self, text="Enviar", font= self.controller.regular_font,

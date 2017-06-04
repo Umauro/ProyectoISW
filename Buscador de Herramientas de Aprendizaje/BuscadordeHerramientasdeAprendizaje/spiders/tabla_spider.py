@@ -42,7 +42,6 @@ class tablasSpider(scrapy.Spider):
 
                     limpio+=caracter
                     ultimo = caracter
-
         with open('Resultados/Materia.txt', 'a+') as archivo:
             print("=================================")
             print("Guardando las tablas encontradas.")
