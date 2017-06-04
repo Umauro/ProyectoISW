@@ -1,7 +1,7 @@
 import scrapy
 
 class tablasSpider(scrapy.Spider):
-    name = "tablas"
+    name = "tablasSpider"
 
     def __init__(self, *args, **kwargs):
       super(tablasSpider, self).__init__(*args, **kwargs)

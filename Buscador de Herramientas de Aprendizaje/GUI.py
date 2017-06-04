@@ -3,9 +3,13 @@ from tkinter import font  as tkfont # python 3
 from tkinter.scrolledtext import ScrolledText
 import url_Obtainer
 import query
-from scrapy.crawler import CrawlerProcess
+from scrapy.crawler import CrawlerProcess, CrawlerRunner
 from scrapy.utils.project import get_project_settings
-process = CrawlerProcess(get_project_settings())
+from BuscadordeHerramientasdeAprendizaje.spiders.tabla_spider import tablasSpider
+
+from scrapy.utils.log import configure_logging
+from twisted.internet import reactor
+
 
 class Aplicacion(tk.Tk):
 
@@ -41,10 +45,11 @@ class Aplicacion(tk.Tk):
             #===================================================================
             #Aqui se debe buscar materia y dejarla en txt
             #===================================================================
+
             #===================================================================
             #Inicio Busqueda de materia
             #===================================================================
-            
+
             db = query.query()
             db.conectar()
             rows = db.select(tabla='Confiable')
@@ -58,9 +63,11 @@ class Aplicacion(tk.Tk):
 
             url = url_Obtainer.urlObtainer(listaConfiable)
             listaUrl = url.urlGetter(campo)
-            process = CrawlerProcess(get_project_settings())
-            process.crawl('tablas', start_urls = listaUrl)
-            process.start()
+            configure_logging()
+            runner = CrawlerRunner().create_crawler(tablasSpider)
+            runner.crawl(tablasSpider, start_urls = listaUrl)
+
+
 
             #===================================================================
             #FIN Busqueda de materia
@@ -71,12 +78,21 @@ class Aplicacion(tk.Tk):
         else:
             frame = self.frames["menuPrincipal"]
         frame.tkraise()
-    def reportarFalsoPositivo(self, dominio=None, titulo=None, tipoHerramienta=None):
-        print("Datos ingresados",dominio," = ",titulo," = ",tipoHerramienta)
+    def reportarFalsoPositivo(self, Dominio=None, Titulo=None, TipoHerramienta=None):
+        print("Datos ingresados",Dominio," = ",Titulo," = ",TipoHerramienta)
         #=======================================================================
         #Aqui se debe hacer coneccion a base de datos y añadir lo seleccionado
         #=======================================================================
 
+        db = query.query()
+        db.conectar()
+        db.insert(tabla='ListaNegra', stringBusqueda=self.frames['menuPrincipal'].entrada.get(), dominio = str(Dominio), titulo = str(Titulo), tipoHerramienta = str(TipoHerramienta))
+        db.desconectar()
+
+
+        #=======================================================================
+        #Fin añadir lo seleccionado
+        #=======================================================================
 
 class menuPrincipal(tk.Frame):
 
@@ -86,15 +102,15 @@ class menuPrincipal(tk.Frame):
         label = tk.Label(self, text="Menu principal", font=controller.title_font)
         label.pack(side="top", fill="x", pady=10)
 
-        entrada = tk.Entry(self, width= 50, font = controller.regular_font)
-        entrada.pack()
+        self.entrada = tk.Entry(self, width= 50, font = controller.regular_font)
+        self.entrada.pack()
 
         opcionesBusqueda = tk.Listbox(self, selectmode="Single", font = controller.regular_font)
         opcionesBusqueda.insert(tk.END, "Materia", "Imagenes")
         opcionesBusqueda.pack()
 
         botonBusqueda = tk.Button(self, text="Iniciar Busqueda", font = controller.regular_font,
-                                       command = lambda: controller.show_frame( opcionesBusqueda.curselection() , entrada.get() ))
+                                       command = lambda: controller.show_frame( opcionesBusqueda.curselection() , self.entrada.get() ))
         botonBusqueda.pack()
 
 class materia(tk.Frame):
@@ -123,6 +139,13 @@ class materia(tk.Frame):
          string=""
          deboVerSig=False
          with open('Resultados/StringsLimpios.txt', 'r') as archivo:
+             #==================================================================
+             #Query Sql de lista negra
+             #==================================================================
+             
+             db = query.query()
+             db.conectar()
+             rows = db.select("Dominio, Titulo", "WHERE StringBusqueda =\""+app.frames['menuPrincipal'].entrada.get()+"\" AND tipoHerramienta = \"materia\"", tabla='ListaNegra')
 
              for linea in archivo:
                  if '===' in linea:
@@ -137,7 +160,10 @@ class materia(tk.Frame):
                      #==========================================================
                      #Aqui se debe verificar si esta en la lista negra
                      #==========================================================
-                     #a[:a.rfind('\n')]
+                     if(len(rows) != 0):
+                         if((fuente, titulo) in rows):
+                             #Hace tu la magia panchito
+                             #a[:a.rfind('\n')]
 
                  else:
                      string+=linea
