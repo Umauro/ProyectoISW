@@ -303,7 +303,7 @@ class imagenes(tk.Frame):
             rows = db.select("Dominio, tipoHerramienta", "WHERE StringBusqueda =\""+self.controller.frames['menuPrincipal'].entrada.get()+"\" AND tipoHerramienta = \"imagenes\"", tabla='ListaNegraImagen')
             db.desconectar()
             rows = set(rows)
-            
+
             for linea in archivo:
                 puedoAgregarlo=True
                 try:
