@@ -48,8 +48,11 @@ class Aplicacion(tk.Tk):
     def show_frame(self, tipo=None, campo=None):
         if tipo[0]==0: #Materia
             #Se debe borrar (dejar en blanco) cualquier txt previo
+            """
             with open('Resultados/Materia.txt', 'w') as archivo:
                 pass
+
+            """
             #===================================================================
             #Inicio Busqueda de materia
             #===================================================================
@@ -82,6 +85,11 @@ class Aplicacion(tk.Tk):
             frame.mostrar()
 
         elif tipo[0]==1:#Caso de imagenes
+            """
+            with open('Resultados/Imagenes.txt', 'w') as archivo:
+                pass
+
+            """
             #===================================================================
             #Inicio Busqueda de imágenes
             #===================================================================
@@ -113,10 +121,13 @@ class Aplicacion(tk.Tk):
         else:
             #Se deben resetear los campos de los otros frames antes de volver
             self.frames["materia"].texto.delete("1.0", tk.END)
+            self.frames["materia"].encontrados=list()
+
 
             for panel, titulo, url in self.frames["imagenes"].encontrados:
                 panel.pack_forget()
                 titulo.pack_forget()
+            self.frames["imagenes"].encontrados=list()
 
             frame = self.frames["menuPrincipal"]
         frame.tkraise()
@@ -163,6 +174,7 @@ class menuPrincipal(tk.Frame):
                                        command = lambda: controller.show_frame( opcionesBusqueda.curselection() , self.entrada.get() ))
         botonBusqueda.pack()
 
+
 class materia(tk.Frame):
 
     def __init__(self, parent, controller):
@@ -171,83 +183,101 @@ class materia(tk.Frame):
         label = tk.Label(self, text="Materia", font=controller.title_font)
         label.pack(side="top", fill="x", pady=10)
 
-        self.texto = ScrolledText(self, font=controller.regular_font,  wrap='word', height= 40, width= 115)
+        self.encontrados = list()
+        self.spinbox= None
 
+        self.canvas = tk.Canvas(self, borderwidth=0, background="#ffffff")
+        self.frameCanvas = tk.Frame(self.canvas, background="#ffffff")
+        self.canvas.create_window((4,4), anchor="nw" ,window=self.frameCanvas)
+        self.vsb = tk.Scrollbar(self, orient="vertical", command=self.canvas.yview)
+        self.canvas.configure(yscrollcommand=self.vsb.set)
+        self.frameCanvas.bind("<Configure>", self.onFrameConfigure)
 
+        self.texto = tk.Text(self.frameCanvas, font=controller.regular_font,  wrap='word', height= 100, width= 115)
 
-        self.button = tk.Button(self, text="Volver al inicio", font= controller.regular_font,
+        self.botonRegreso = tk.Button(self, text="Volver al inicio", font= controller.regular_font,
                            command=lambda: controller.show_frame("menuPrincipal"))
-        self.spinbox = None
+
+    def onFrameConfigure(self, event):
+        '''Reset the scroll region to encompass the inner frame'''
+        self.canvas.configure(scrollregion=self.canvas.bbox("all"))
 
     def mostrar(self):
-         #======================================================================
-         #Se inicia el proceso de carga de contenido encontrado
-         #======================================================================
-         i=1
-         encontrados=list()
-         string = ""
-         deboVerSig=False
-         deboIgnorar=False
-         with open('Resultados/StringsLimpios.txt', 'r') as archivo:
-             #==================================================================
-             #Query Sql de lista negra
-             #==================================================================
+        self.vsb.pack(side="right", fill="y")
+        self.canvas.pack(side="top", fill="both", expand=True)
+        self.botonRegreso.pack(side="left" ,padx=10, pady=5)
 
-             db = query.query()
-             db.conectar()
-             rows = db.select("Dominio, Titulo", "WHERE StringBusqueda =\""+self.controller.frames['menuPrincipal'].entrada.get()+"\" AND tipoHerramienta = \"materia\"", tabla='ListaNegra')
-             print("LO ENCONTRADO EN LA LISTA NEGRA ES", rows)
-             rows = set(rows)
+        #======================================================================
+        #Se inicia el proceso de carga de contenido encontrado
+        #======================================================================
+        i=1
+        string = ""
+        deboVerSig=False
+        deboIgnorar=False
+        with open('Resultados/Materia.txt', 'r') as archivo:
+            #==================================================================
+            #Query Sql de lista negra
+            #==================================================================
 
-             for linea in archivo:
-                 if '===' in linea:
-                     anterior = string
-                     fuente = linea.split(" ")[1].strip()
-                     string+="===Resultado numero "+str(i)+", fuente: "+fuente+"===\n"
-                     deboVerSig = True
-                     deboIgnorar = False
-                 elif deboVerSig:
-                     titulo = linea.strip()
-                     encontrados.append( (fuente, titulo) )
-                     string+=linea
-                     deboVerSig=False
-                     #==========================================================
-                     #Aqui se debe verificar si esta en la lista negra
-                     #==========================================================
-                     if(len(rows) != 0):
-                         if((fuente, titulo) in rows):
-                             print("==SE DETECTO UN RESULTADO BLOQUEADO==")
+            db = query.query()
+            db.conectar()
+            rows = db.select("Dominio, Titulo", "WHERE StringBusqueda =\""+self.controller.frames['menuPrincipal'].entrada.get()+"\" AND tipoHerramienta = \"materia\"", tabla='ListaNegra')
+            print("LO ENCONTRADO EN LA LISTA NEGRA ES", rows)
+            rows = set(rows)
 
-                             #Se procede a restaurar el string antes del falso positivo
-                             string = anterior
+            for linea in archivo:
+                if '===' in linea:
+                    anterior = string
+                    fuente = linea.split(" ")[1].strip()
+                    string+="===Resultado numero "+str(i)+", fuente: "+fuente+"===\n"
+                    deboVerSig = True
+                    deboIgnorar = False
+                elif deboVerSig:
+                    titulo = linea.strip()
+                    self.encontrados.append( (fuente, titulo) )
+                    string+=linea
+                    deboVerSig=False
+                    #==========================================================
+                    #Aqui se debe verificar si esta en la lista negra
+                    #==========================================================
+                    if(len(rows) != 0):
+                        if((fuente, titulo) in rows):
+                            print("==SE DETECTO UN RESULTADO BLOQUEADO==")
 
-                             print(string)
-                             del encontrados[-1]
-                             deboIgnorar = True
-                         else:
-                             i+=1
+                            #Se procede a restaurar el string antes del falso positivo
+                            string = anterior
 
-                 elif deboIgnorar==False:
-                     string+=linea
+                            print(string)
+                            del self.encontrados[-1]
+                            deboIgnorar = True
+                        else:
+                            i+=1
+                    else:
+                        i+=1
 
-             #A este punto ya tenemos todos los encontrados
+                elif deboIgnorar==False:
+                    string+=linea
 
-         #DEFINICION DEL SPINBOX DE REPORTES
-         if self.spinbox==None:
-             self.spinbox = tk.Spinbox(self, values=tuple(range(1, len(encontrados)+1)), font=self.controller.regular_font)
-             self.textoFalsoPositivo = tk.Label(self, text="Algún problema? reporte falsos positivos seleccionando el número.", font=self.controller.regular_font)
+            #A este punto ya tenemos todos los encontrados
 
-             self.botonEnviarReporte = tk.Button(self, text="Enviar", font= self.controller.regular_font,
-                                  command=lambda: self.controller.reportarFalsoPositivo( encontrados[int(self.spinbox.get())-1][0] , encontrados[int(self.spinbox.get())-1][1] , "materia") )
+        #DEFINICION DEL SPINBOX DE REPORTES
+        if self.spinbox==None:
+            #self.spinbox = tk.Spinbox(self, values=tuple(range(1, len(self.encontrados)+1)), font=self.controller.regular_font)
+            self.spinbox = tk.Spinbox(self, font=self.controller.regular_font)
 
+            self.textoFalsoPositivo = tk.Label(self, text="Algún problema? reporte falsos positivos seleccionando el número.", font=self.controller.regular_font)
 
-         self.texto.insert(tk.END, string)
-         self.texto.pack(side="top",fill="both", expand=True)
-         self.button.pack(side="left", padx=10, pady=10)
-         self.textoFalsoPositivo.pack()
-         self.spinbox.pack()
-         self.botonEnviarReporte.pack(padx=10, pady=10)
+            self.botonEnviarReporte = tk.Button(self, text="Enviar", font= self.controller.regular_font,
+            command=lambda: self.controller.reportarFalsoPositivo( self.encontrados[int(self.spinbox.get())-1][0] , self.encontrados[int(self.spinbox.get())-1][1] , "materia") )
 
+        self.spinbox["values"]=tuple(range(1, len(self.encontrados)+1))
+
+        self.texto.insert(tk.END, string)
+        self.texto.pack(side="top",fill="both", expand=True)
+
+        self.textoFalsoPositivo.pack()
+        self.spinbox.pack()
+        self.botonEnviarReporte.pack(padx=10, pady=10)
 
 class imagenes(tk.Frame):
 
@@ -352,3 +382,91 @@ class imagenes(tk.Frame):
 app = Aplicacion()
 app.geometry("1280x720")
 app.mainloop()
+
+"""
+class materia(tk.Frame):
+
+    def __init__(self, parent, controller):
+        tk.Frame.__init__(self, parent)
+        self.controller = controller
+        label = tk.Label(self, text="Materia", font=controller.title_font)
+        label.pack(side="top", fill="x", pady=10)
+
+        self.texto = ScrolledText(self, font=controller.regular_font,  wrap='word', height= 40, width= 115)
+
+
+
+        self.button = tk.Button(self, text="Volver al inicio", font= controller.regular_font,
+                           command=lambda: controller.show_frame("menuPrincipal"))
+        self.spinbox = None
+
+    def mostrar(self):
+         #======================================================================
+         #Se inicia el proceso de carga de contenido encontrado
+         #======================================================================
+         i=1
+         encontrados=list()
+         string = ""
+         deboVerSig=False
+         deboIgnorar=False
+         with open('Resultados/StringsLimpios.txt', 'r') as archivo:
+             #==================================================================
+             #Query Sql de lista negra
+             #==================================================================
+
+             db = query.query()
+             db.conectar()
+             rows = db.select("Dominio, Titulo", "WHERE StringBusqueda =\""+self.controller.frames['menuPrincipal'].entrada.get()+"\" AND tipoHerramienta = \"materia\"", tabla='ListaNegra')
+             print("LO ENCONTRADO EN LA LISTA NEGRA ES", rows)
+             rows = set(rows)
+
+             for linea in archivo:
+                 if '===' in linea:
+                     anterior = string
+                     fuente = linea.split(" ")[1].strip()
+                     string+="===Resultado numero "+str(i)+", fuente: "+fuente+"===\n"
+                     deboVerSig = True
+                     deboIgnorar = False
+                 elif deboVerSig:
+                     titulo = linea.strip()
+                     encontrados.append( (fuente, titulo) )
+                     string+=linea
+                     deboVerSig=False
+                     #==========================================================
+                     #Aqui se debe verificar si esta en la lista negra
+                     #==========================================================
+                     if(len(rows) != 0):
+                         if((fuente, titulo) in rows):
+                             print("==SE DETECTO UN RESULTADO BLOQUEADO==")
+
+                             #Se procede a restaurar el string antes del falso positivo
+                             string = anterior
+
+                             print(string)
+                             del encontrados[-1]
+                             deboIgnorar = True
+                         else:
+                             i+=1
+
+                 elif deboIgnorar==False:
+                     string+=linea
+
+             #A este punto ya tenemos todos los encontrados
+
+         #DEFINICION DEL SPINBOX DE REPORTES
+         if self.spinbox==None:
+             self.spinbox = tk.Spinbox(self, values=tuple(range(1, len(encontrados)+1)), font=self.controller.regular_font)
+             self.textoFalsoPositivo = tk.Label(self, text="Algún problema? reporte falsos positivos seleccionando el número.", font=self.controller.regular_font)
+
+             self.botonEnviarReporte = tk.Button(self, text="Enviar", font= self.controller.regular_font,
+                                  command=lambda: self.controller.reportarFalsoPositivo( encontrados[int(self.spinbox.get())-1][0] , encontrados[int(self.spinbox.get())-1][1] , "materia") )
+
+
+         self.texto.insert(tk.END, string)
+         self.texto.pack(side="top",fill="both", expand=True)
+         self.button.pack(side="left", padx=10, pady=10)
+         self.textoFalsoPositivo.pack()
+         self.spinbox.pack()
+         self.botonEnviarReporte.pack(padx=10, pady=10)
+
+"""
