@@ -28,24 +28,38 @@ class query():
 
     def insert(self, *args, **kwargs):
         try:
-            querySql = "INSERT INTO " + kwargs['tabla'] +"(Dominio, URL) VALUES(\'"+ kwargs['dominio'] +"\',\'"+ kwargs['url'] +"\');"
-            print(querySql)
-            self.cur.execute(querySql)
-            self.con.commit()
+            if(kwargs['tabla'] == 'Confiable'):
+                querySql = "INSERT INTO " + kwargs['tabla'] +"(Dominio, URL) VALUES(\'"+ kwargs['dominio'] +"\',\'"+ kwargs['url'] +"\');"
+                self.cur.execute(querySql)
+                self.con.commit()
+            elif(kwargs['tabla'] == 'ListaNegra'):
+                querySql = "INSERT INTO " + kwargs['tabla'] +"(StringBusqueda, Dominio, Titulo, tipoHerramienta) VALUES(\'"+kwargs['stringBusqueda']+"\',\'"+ kwargs['dominio'] +"\',\'"+ kwargs['titulo'] +"\',\'" + kwargs['tipoHerramienta'] + "\');"
+                self.cur.execute(querySql)
+                self.con.commit()
+            elif(kwargs['tabla'] == 'ListaNegraImagen'):
+                querySql = "INSERT INTO " + kwargs['tabla'] +"(StringBusqueda, Dominio, tipoHerramienta) VALUES(\'"+kwargs['stringBusqueda']+"\',\'"+ kwargs['dominio'] +"\',\'"+ kwargs['tipoHerramienta'] + "\');"
+                self.cur.execute(querySql)
+                self.con.commit()
+
         except AttributeError:
             print("Error en la cantidad de atributos")
         except TypeError:
             print("Error en tipos de atributos")
-        except OperationalError:
+        except lite.OperationalError:
             print("Error en la consulta sql")
         except lite.DatabaseError:
             print("Error con la base de datos"+str(lite.DatabaseError[0]))
+        except KeyError:
+            print("Parámetro no encontrado")
+        except lite.IntegrityError:
+            print("Registro ya ingresado en la base de datos")
 
 
 
-    def select(self, campos = "*", *args, **kwargs):
+    def select(self, campos = "*", where = "", *args, **kwargs):
         try:
-            querySql = "SELECT "+ campos +" FROM " +kwargs['tabla'] + ";"
+            querySql = "SELECT "+ campos +" FROM " +kwargs['tabla'] +" "+ where +";"
+            print(querySql)
             self.cur.execute(querySql)
             rows = self.cur.fetchall()
 
@@ -53,7 +67,7 @@ class query():
             print("Error en la cantidad de atributos")
         except TypeError:
             print("Error en tipos de atributos")
-        except OperationalError:
+        except lite.OperationalError:
             print("Error en la consulta sql")
         except lite.DatabaseError:
             print("Error con la base de datos: ")
@@ -63,7 +77,6 @@ class query():
     def update(self, *args, **kwargs):
         try:
             querySql = "UPDATE "+ kwargs['tabla'] + " SET Dominio=\'"+ kwargs['dominioNuevo']+"\', URL=\'"+ kwargs['url']+"\' WHERE Dominio =\'"+kwargs['dominioAntiguo']+"\';"
-            print(querySql)
             self.cur.execute(querySql)
             self.con.commit()
 
@@ -71,7 +84,7 @@ class query():
             print("Error en la cantidad de atributos")
         except TypeError:
             print("Error en tipos de atributos")
-        except OperationalError:
+        except lite.OperationalError:
             print("Error en la consulta sql")
         except lite.DatabaseError:
             print("Error con la base de datos")
@@ -83,19 +96,22 @@ Función para insertar elementos a la base de datos utilizada
 
 Uso:
     llamar a la función de la siguiente manera
-    .query(tabla = <nombre_tabla>, dominio = <nombre_dominio>, url = <URL>)
+    Confiable:
+    .insert(tabla = <nombre_tabla>, dominio = <nombre_dominio>, url = <URL>)
 
+    ListaNegra:
+    .insert(tabla = <nombre_tabla>, dominio = <nombre_dominio>, titulo = <nombre_titulo>, tipoHerramienta = <tipo_Herramienta>)
     Donde <nombre_tabla> = {Confiable, ListaNegra}
 """
 
 """
-Función: select(campos = "*", *args, **kwargs)
+Función: select(campos = "*",where ="", *args, **kwargs)
 
 Función para seleccionar elementos desde la base de datos
 
 Uso:
     llamar a la función de la siguiente manera
-    .select(<campos Requeridos>, tabla = '<nombre_tabla>')
+    .select(<campos Requeridos>,<sentencia WHERE>, tabla = '<nombre_tabla>')
 
 
     Donde <nombre_tabla> = {Confiable, ListaNegra}
