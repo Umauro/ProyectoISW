@@ -1,0 +1,75 @@
+
+===Fuente: http://hyperphysics.phy-astr.gsu.edu/hbasees/electric/elefie.html
+Campo Eléctrico
+ 
+El campo eléctrico se define como la fuerza eléctrica por unidad de carga. La dirección del campo se toma como la dirección de la fuerza que ejercería sobre una carga positiva de prueba. El campo eléctrico esta dirigido radialmente hacia fuera de una carga positiva y radialmente hacia el interior de una carga puntual negativa. 
+
+
+   
+
+   
+
+
+   
+Haga clic sobre cualquiera de los ejemplos de arriba para mas detalles.
+
+Ley de la Fuerza de Lorentz
+
+Uso de la Ley de Gauss para el Cálculo del Campo Eléctrico
+Ley de la Fuerza de LorentzUso de la Ley de Gauss para el Cálculo del Campo EléctricoÍndiceConceptos de Campo EléctricoFuerza Electromagnética HyperPhysics*****Electricidad y MagnetismoM Olmo R NaveHyperPhysics*****Electricidad y MagnetismoM Olmo R NaveAtrás
+===Fuente: http://hyperphysics.phy-astr.gsu.edu/hbasees/electric/elefie.html
+Campo Eléctrico de una Carga Puntual
+ 
+El campo eléctrico de una carga puntual se puede obtener de la ley de Coulomb: 
+
+
+El campo eléctrico está dirigido radialmente hacia fuera de una carga puntual en todas las direcciones. Los círculos representan superficies equipotenciales esféricas.
+
+
+
+El campo eléctrico de cualquier número de cargas puntuales, se puede obtener por la suma vectorial de los campos individuales. Un campo dirigido hacia fuera se toma como positivo; el campo de carga negativa está dirigido hacia el interior de la carga. 
+   Esta expresión de campo eléctrico se puede obtener también, aplicando la ley de Gauss. 
+
+Otras Geometrías de Campo EléctricoMúltiples Cargas Puntuales
+
+
+El campo eléctrico de una carga puntual se puede obtener de la ley de Coulomb: 
+
+
+El campo eléctrico está dirigido radialmente hacia fuera de una carga puntual en todas las direcciones. Los círculos representan superficies equipotenciales esféricas.
+
+
+Otras Geometrías de Campo EléctricoMúltiples Cargas PuntualesÍndiceConceptos de Campo Eléctrico HyperPhysics*****Electricidad y MagnetismoM Olmo R NaveHyperPhysics*****Electricidad y MagnetismoM Olmo R NaveAtrás
+===Fuente: http://hyperphysics.phy-astr.gsu.edu/hbasees/electric/elefie.html
+Constantes Eléctrica y Magnética
+ Se usan normalmente tres constantes en las ecuaciones que describen los campos eléctrico y magnético y su propagación. Una es la velocidad de la luz c, y las otras dos son la permitividad eléctrica del vacio ε0 y la permeabilidad magnética del vacio, μ0. La permeabilidad magnética del vacio se considera que tiene el siguiente valor exacto
+Ver también Permeabilidad Relativa
+Esta μ0 contiene la unidad de fuerza N para el Newton y la unidad A es el Amperio, la unidad de intensidad de corriente eléctrica. 
+Con la permeabilidad magnética establecida, la permitividad eléctrica toma el valor dado en la fórmula
+
+donde la velocidad de la luz c está dada por
+
+Esto da un valor de la permitividad del vacio de
+
+que en la práctica se usa a menudo en la forma
+
+Estas expresiones contienen las unidades F para Faraday, la unidad de capacidad, y C para culombio, la unidad de carga eléctrica.
+En presencia de un medio polarizable o magnético, las constantes efectivas tendrán valores diferentes. En el caso de un medio polarizable llamado un dieléctrico, se establece una permitividad relativa (constante comparativa) o una constante dieléctrica. En el caso del medio magnético se puede establecer la permeabilidad relativa. 
+Conexiones Físicas de la Permitividad y la Permeabilidad
+
+Ver también Permeabilidad RelativaConexiones Físicas de la Permitividad y la PermeabilidadÍndiceConceptos de Campo Eléctrico HyperPhysics*****Electricidad y MagnetismoM Olmo R NaveHyperPhysics*****Electricidad y MagnetismoM Olmo R NaveAtrás
+===Fuente: http://hyperphysics.phy-astr.gsu.edu/hbasees/electric/elefie.html
+Conexiones Físicas de la Permitividad Eléctrica y la Permeabilidad Magnética
+ Las expresiones para los campos eléctrico y magnético en el vacío , contienen la permitividad eléctrica ε0 y la permeabilidad magnética μ0 del vacío. Como se indicó en la sección sobre las constantes eléctrica y magnética, estas dos cantidades no son independientes sino que están relacionadas con "c", la velocidad de la luz y otras ondas electromagnéticas. 
+
+La permitividad eléctrica está conectada con la energía almacenada en un campo eléctrico. Está relacionada en la expresión de la capacidad porque afecta a la cantidad de carga que se debe almacenar en un condensador para alcanzar un determinada campo eléctrico neto. En presencia de un medio polarizable, toma mas cargas para alcanzar un determinado campo eléctrico neto. El efecto del medio se establece a menudo en términos de permitividad relativa. 
+
+
+
+La permeabilidad magnética está conectada con la energía almacenada en un campo magnético. Está relacionada en la expresión de la inductancia porque en presencia de un medio magnetizable, se puede almacenar una mayor cantidad de energía en el campo magnético para una determinada corriente en la bobina. El efecto del medio se establece a menudo en términos de permeabilidad relativa.
+
+
+La permitividad eléctrica está conectada con la energía almacenada en un campo eléctrico. Está relacionada en la expresión de la capacidad porque afecta a la cantidad de carga que se debe almacenar en un condensador para alcanzar un determinada campo eléctrico neto. En presencia de un medio polarizable, toma mas cargas para alcanzar un determinado campo eléctrico neto. El efecto del medio se establece a menudo en términos de permitividad relativa. 
+
+
+La permeabilidad magnética está conectada con la energía almacenada en un campo magnético. Está relacionada en la expresión de la inductancia porque en presencia de un medio magnetizable, se puede almacenar una mayor cantidad de energía en el campo magnético para una determinada corriente en la bobina. El efecto del medio se establece a menudo en términos de permeabilidad relativa.ÍndiceConceptos de Campo Eléctrico HyperPhysics*****Electricidad y MagnetismoM Olmo R NaveHyperPhysics*****Electricidad y MagnetismoM Olmo R NaveAtrás

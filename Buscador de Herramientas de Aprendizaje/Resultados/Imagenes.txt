@@ -1,0 +1,13 @@
+http://hyperphysics.phy-astr.gsu.edu/hbasees/electric/imgele/efie.gif
+http://hyperphysics.phy-astr.gsu.edu/hbasees/electric/imgele/efiedef.gif
+http://hyperphysics.phy-astr.gsu.edu/hbasees/electric/imgele/elefie2.gif
+http://hyperphysics.phy-astr.gsu.edu/hbasees/electric/imgele/elefie3.gif
+http://hyperphysics.phy-astr.gsu.edu/hbasees/electric/imgele/emcons.gif
+http://hyperphysics.phy-astr.gsu.edu/hbasees/electric/imgele/emcons2.gif
+http://hyperphysics.phy-astr.gsu.edu/hbasees/electric/imgele/emcons2b.gif
+http://hyperphysics.phy-astr.gsu.edu/hbasees/electric/imgele/emcons3.gif
+http://hyperphysics.phy-astr.gsu.edu/hbasees/electric/imgele/emcons4.gif
+http://hyperphysics.phy-astr.gsu.edu/hbasees/electric/imgele/emcons2.gif
+http://hyperphysics.phy-astr.gsu.edu/hbasees/electric/imgele/emwavc.gif
+http://hyperphysics.phy-astr.gsu.edu/hbasees/electric/imgele/epermc.gif
+http://hyperphysics.phy-astr.gsu.edu/hbasees/electric/imgele/bperml.gif
