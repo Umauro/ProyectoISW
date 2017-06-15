@@ -58,7 +58,7 @@ class Aplicacion(tk.Tk):
                 """
                 with open('Resultados/Materia.txt', 'w') as archivo:
                     pass
-                """
+                """    
 
                 #===================================================================
                 #Inicio Busqueda de materia
@@ -77,13 +77,19 @@ class Aplicacion(tk.Tk):
 
                 url = url_Obtainer.urlObtainer(listaConfiable)
                 listaUrl = url.urlGetter(campo)
-                configure_logging()
-                runner = CrawlerRunner().create_crawler(tablasSpider)
-                d = runner.crawl(tablasSpider, start_urls = listaUrl)
-                d.addBoth(lambda _: reactor.crash())
-                reactor.run()
-                """
+                if(len(listaUrl) == 0):
+                    self.frames["menuPrincipal"].errores["text"]="No se encontraron resultados para " + campo
+                    self.frames["menuPrincipal"].errores["fg"]="red"
+                    self.frames["menuPrincipal"].errores.pack(pady=2)
+                    return None
+                else:
+                    configure_logging()
+                    runner = CrawlerRunner().create_crawler(tablasSpider)
+                    d = runner.crawl(tablasSpider, start_urls = listaUrl)
+                    d.addBoth(lambda _: reactor.crash())
+                    reactor.run()
 
+                """
 
                 #===================================================================
                 #FIN Busqueda de materia
@@ -115,11 +121,17 @@ class Aplicacion(tk.Tk):
 
                 url = url_Obtainer.urlObtainer(listaConfiable)
                 listaUrl = url.urlGetter(campo)
-                configure_logging()
-                runner = CrawlerRunner().create_crawler(imagenSpider)
-                d = runner.crawl(imagenSpider, start_urls = listaUrl)
-                d.addBoth(lambda _: reactor.crash())
-                reactor.run()
+                if(len(listaUrl) == 0):
+                    self.frames["menuPrincipal"].errores["text"]="No se encontraron resultados para " + campo
+                    self.frames["menuPrincipal"].errores["fg"]="red"
+                    self.frames["menuPrincipal"].errores.pack(pady=2)
+                    return None
+                else:
+                    configure_logging()
+                    runner = CrawlerRunner().create_crawler(imagenSpider)
+                    d = runner.crawl(imagenSpider, start_urls = listaUrl)
+                    d.addBoth(lambda _: reactor.crash())
+                    reactor.run()
                 """
                 #===================================================================
                 #FIN Busqueda de imágenes

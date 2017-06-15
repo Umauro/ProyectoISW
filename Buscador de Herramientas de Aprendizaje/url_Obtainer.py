@@ -22,6 +22,9 @@ class urlObtainer():
 
             except TypeError:
                 print("Error al buscar, por favor intente más tarde (?)")
+            except KeyError:
+                print("No se encontraron resultados")
+                  
 
         return urlList
 
