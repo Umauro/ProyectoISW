@@ -58,7 +58,7 @@ class Aplicacion(tk.Tk):
                 """
                 with open('Resultados/Materia.txt', 'w') as archivo:
                     pass
-                """    
+                """
 
                 #===================================================================
                 #Inicio Busqueda de materia
@@ -192,6 +192,7 @@ class menuPrincipal(tk.Frame):
 
         opcionesBusqueda = tk.Listbox(self, selectmode="Single", font = controller.regular_font)
         opcionesBusqueda.insert(tk.END, "Materia", "Imagenes")
+        opcionesBusqueda.select_set(0)
         opcionesBusqueda.pack()
 
         botonBusqueda = tk.Button(self, text="Iniciar Busqueda", font = controller.regular_font,
