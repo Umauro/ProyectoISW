@@ -46,92 +46,111 @@ class Aplicacion(tk.Tk):
         self.show_frame("menuPrincipal")
 
     def show_frame(self, tipo=None, campo=None):
-        if tipo[0]==0: #Materia
-            #Se debe borrar (dejar en blanco) cualquier txt previo
-
-            with open('Resultados/Materia.txt', 'w') as archivo:
-                pass
-
-
-            #===================================================================
-            #Inicio Busqueda de materia
-            #===================================================================
-
-            db = query.query()
-            db.conectar()
-            rows = db.select(tabla='Confiable')
-            db.desconectar()
-            listaConfiable = []
-
-            for row in rows:
-                a, b, c = row
-                listaConfiable.append(b)
-
-
-            url = url_Obtainer.urlObtainer(listaConfiable)
-            listaUrl = url.urlGetter(campo)
-            configure_logging()
-            runner = CrawlerRunner().create_crawler(tablasSpider)
-            d = runner.crawl(tablasSpider, start_urls = listaUrl)
-            d.addBoth(lambda _: reactor.crash())
-            reactor.run()
-
-
-
-            #===================================================================
-            #FIN Busqueda de materia
-            #===================================================================
-
-            frame = self.frames["materia"]
-            frame.mostrar()
-
-        elif tipo[0]==1:#Caso de imagenes
-
-            with open('Resultados/Imagenes.txt', 'w') as archivo:
-                pass
-
-
-            #===================================================================
-            #Inicio Busqueda de imágenes
-            #===================================================================
-
-            db = query.query()
-            db.conectar()
-            rows = db.select(tabla='Confiable')
-            db.desconectar()
-            listaConfiable = []
-
-            for row in rows:
-                a, b, c = row
-                listaConfiable.append(b)
-
-
-            url = url_Obtainer.urlObtainer(listaConfiable)
-            listaUrl = url.urlGetter(campo)
-            configure_logging()
-            runner = CrawlerRunner().create_crawler(imagenSpider)
-            d = runner.crawl(imagenSpider, start_urls = listaUrl)
-            d.addBoth(lambda _: reactor.crash())
-            reactor.run()
-
-            #===================================================================
-            #FIN Busqueda de imágenes
-            #===================================================================
-            frame = self.frames["imagenes"]
-            frame.mostrar()
+        if campo=="":#Caso en que no metio nada como campo de busqueda
+            self.frames["menuPrincipal"].errores["text"]="Error, porfavor ingrese un tópico para la busqueda"
+            self.frames["menuPrincipal"].errores["fg"]="red"
+            self.frames["menuPrincipal"].errores.pack(pady=2)
+            return None
         else:
-            #Se deben resetear los campos de los otros frames antes de volver
-            self.frames["materia"].texto.delete("1.0", tk.END)
-            self.frames["materia"].encontrados=list()
+            self.frames["menuPrincipal"].errores.pack_forget()
+            if tipo[0]==0: #Materia
+                #Se debe borrar (dejar en blanco) cualquier txt previo
+
+                with open('Resultados/Materia.txt', 'w') as archivo:
+                    pass
 
 
-            for panel, titulo, url in self.frames["imagenes"].encontrados:
-                panel.pack_forget()
-                titulo.pack_forget()
-            self.frames["imagenes"].encontrados=list()
+                #===================================================================
+                #Inicio Busqueda de materia
+                #===================================================================
 
-            frame = self.frames["menuPrincipal"]
-        frame.tkraise()
+                db = query.query()
+                db.conectar()
+                rows = db.select(tabla='Confiable')
+                db.desconectar()
+                listaConfiable = []
+
+                for row in rows:
+                    a, b, c = row
+                    listaConfiable.append(b)
+
+
+                url = url_Obtainer.urlObtainer(listaConfiable)
+                listaUrl = url.urlGetter(campo)
+                if(len(listaUrl) == 0):
+                    self.frames["menuPrincipal"].errores["text"]="No se encontraron resultados para " + campo
+                    self.frames["menuPrincipal"].errores["fg"]="red"
+                    self.frames["menuPrincipal"].errores.pack(pady=2)
+                    return None
+                else:
+                    configure_logging()
+                    runner = CrawlerRunner().create_crawler(tablasSpider)
+                    d = runner.crawl(tablasSpider, start_urls = listaUrl)
+                    d.addBoth(lambda _: reactor.crash())
+                    reactor.run()
+
+
+
+                #===================================================================
+                #FIN Busqueda de materia
+                #===================================================================
+
+                frame = self.frames["materia"]
+                frame.mostrar()
+
+            elif tipo[0]==1:#Caso de imagenes
+
+                with open('Resultados/Imagenes.txt', 'w') as archivo:
+                    pass
+
+
+                #===================================================================
+                #Inicio Busqueda de imágenes
+                #===================================================================
+
+                db = query.query()
+                db.conectar()
+                rows = db.select(tabla='Confiable')
+                db.desconectar()
+                listaConfiable = []
+
+                for row in rows:
+                    a, b, c = row
+                    listaConfiable.append(b)
+
+
+                url = url_Obtainer.urlObtainer(listaConfiable)
+                listaUrl = url.urlGetter(campo)
+                if(len(listaUrl) == 0):
+                    self.frames["menuPrincipal"].errores["text"]="No se encontraron resultados para " + campo
+                    self.frames["menuPrincipal"].errores["fg"]="red"
+                    self.frames["menuPrincipal"].errores.pack(pady=2)
+                    return None
+                else:
+                    configure_logging()
+                    runner = CrawlerRunner().create_crawler(imagenSpider)
+                    d = runner.crawl(imagenSpider, start_urls = listaUrl)
+                    d.addBoth(lambda _: reactor.crash())
+                    reactor.run()
+
+                #===================================================================
+                #FIN Busqueda de imágenes
+                #===================================================================
+                frame = self.frames["imagenes"]
+                frame.mostrar()
+            else:
+                #Se deben resetear los campos de los otros frames antes de volver
+                self.frames["materia"].texto.delete("1.0", tk.END)
+                self.frames["materia"].encontrados=list()
+
+
+                for panel, titulo, url in self.frames["imagenes"].encontrados:
+                    panel.pack_forget()
+                    titulo.pack_forget()
+                self.frames["imagenes"].encontrados=list()
+
+                frame = self.frames["menuPrincipal"]
+            frame.tkraise()
     def reportarFalsoPositivo(self, Dominio=None, Titulo=None, TipoHerramienta=None):
         print("Datos ingresados",Dominio," = ",Titulo," = ",TipoHerramienta)
         #=======================================================================
@@ -164,16 +183,24 @@ class menuPrincipal(tk.Frame):
         label = tk.Label(self, text="Menu principal", font=controller.title_font)
         label.pack(side="top", fill="x", pady=10)
 
+        tk.Label(self, text="Ingrese un tópico para sobre el cual buscar:", font=controller.regular_font).pack(side="top", fill="x", pady=2)
+
         self.entrada = tk.Entry(self, width= 50, font = controller.regular_font)
         self.entrada.pack()
 
+        tk.Label(self, text="Seleccione alguna herramienta de aprendizaje", font=controller.regular_font).pack(side="top", fill="x", pady=5)
+
         opcionesBusqueda = tk.Listbox(self, selectmode="Single", font = controller.regular_font)
         opcionesBusqueda.insert(tk.END, "Materia", "Imagenes")
+        opcionesBusqueda.select_set(0)
         opcionesBusqueda.pack()
 
         botonBusqueda = tk.Button(self, text="Iniciar Busqueda", font = controller.regular_font,
                                        command = lambda: controller.show_frame( opcionesBusqueda.curselection() , self.entrada.get() ))
         botonBusqueda.pack()
+
+        self.errores = tk.Label(self, font=controller.regular_font)
+
 
 
 class materia(tk.Frame):

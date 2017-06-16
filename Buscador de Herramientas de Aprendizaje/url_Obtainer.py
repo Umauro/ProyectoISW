@@ -17,11 +17,15 @@ class urlObtainer():
                 data = results['items']
                 #print(data)
                 resultado = data[0]['link']
-                urlList.append(resultado)
+                if(dominio in resultado):
+                    urlList.append(resultado)
                 print(resultado)
 
             except TypeError:
                 print("Error al buscar, por favor intente más tarde (?)")
+            except KeyError:
+                print("No se encontraron resultados")
+
 
         return urlList
 
