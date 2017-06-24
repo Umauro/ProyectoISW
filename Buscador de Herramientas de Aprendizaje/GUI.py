@@ -146,11 +146,13 @@ class Aplicacion(tk.Tk):
                 #Se deben resetear los campos de los otros frames antes de volver
                 self.frames["materia"].texto.delete("1.0", tk.END)
                 self.frames["materia"].encontrados=list()
+                self.frames["materia"].textoFeedback.pack_forget()
 
                 for panel, titulo, url in self.frames["imagenes"].encontrados:
                     panel.pack_forget()
                     titulo.pack_forget()
                 self.frames["imagenes"].encontrados=list()
+                self.frames["imagenes"].textoFeedback.pack_forget()
 
                 for i in self.frames["desbloqueo"].listaFrames:
                     i.pack_forget()
@@ -182,6 +184,10 @@ class Aplicacion(tk.Tk):
             db.insert(tabla='ListaNegraImagen', stringBusqueda=self.frames['menuPrincipal'].entrada.get(), dominio = str(Dominio), tipoHerramienta = str(TipoHerramienta))
             print("INSERTÉ ALGO")
             db.desconectar()
+
+        self.frames[TipoHerramienta].textoFeedback["text"] = "Listo, herramienta de aprendizaje bloqueada."
+        self.frames[TipoHerramienta].textoFeedback["fg"] = "black"
+        self.frames[TipoHerramienta].textoFeedback.pack(side="bottom", pady="5")
 
         #=======================================================================
         #Fin añadir lo seleccionado
@@ -261,10 +267,14 @@ class materia(tk.Frame):
         self.canvas.configure(yscrollcommand=self.vsb.set)
         self.frameCanvas.bind("<Configure>", self.onFrameConfigure)
 
+        self.frameInferior = tk.Frame(self, height=300)
+
         self.texto = tk.Text(self.frameCanvas, font=controller.regular_font,  wrap='word', height= 100, width= 115)
 
-        self.botonRegreso = tk.Button(self, text="Volver al inicio", font= controller.regular_font,
+        self.botonRegreso = tk.Button(self.frameInferior, text="Volver al inicio", font= controller.regular_font,
                            command=lambda: controller.show_frame("menuPrincipal"))
+
+        self.textoFeedback = tk.Label(self, font=self.controller.regular_font)
 
     def onFrameConfigure(self, event):
         '''Reset the scroll region to encompass the inner frame'''
@@ -331,11 +341,11 @@ class materia(tk.Frame):
         #DEFINICION DEL SPINBOX DE REPORTES
         if self.spinbox==None:
             #self.spinbox = tk.Spinbox(self, values=tuple(range(1, len(self.encontrados)+1)), font=self.controller.regular_font)
-            self.spinbox = tk.Spinbox(self, font=self.controller.regular_font)
+            self.spinbox = tk.Spinbox(self.frameInferior, font=self.controller.regular_font)
 
-            self.textoFalsoPositivo = tk.Label(self, text="Algún problema? reporte falsos positivos seleccionando el número.", font=self.controller.regular_font)
+            self.textoFalsoPositivo = tk.Label(self.frameInferior, text="¿Algún problema? reporte falsos positivos seleccionando el número.", font=self.controller.regular_font)
 
-            self.botonEnviarReporte = tk.Button(self, text="Enviar", font= self.controller.regular_font,
+            self.botonEnviarReporte = tk.Button(self.frameInferior, text="Enviar", font= self.controller.regular_font,
             command=lambda: self.controller.reportarFalsoPositivo( self.encontrados[int(self.spinbox.get())-1][0] , self.encontrados[int(self.spinbox.get())-1][1] , "materia") )
 
         self.spinbox["values"]=tuple(range(1, len(self.encontrados)+1))
@@ -343,9 +353,11 @@ class materia(tk.Frame):
         self.texto.insert(tk.END, string)
         self.texto.pack(side="top",fill="both", expand=True)
 
-        self.textoFalsoPositivo.pack()
-        self.spinbox.pack()
-        self.botonEnviarReporte.pack(padx=10, pady=10)
+        self.frameInferior.pack(fill="both")
+
+        self.textoFalsoPositivo.pack(side="left", padx="5", fill="x", expand=True)
+        self.botonEnviarReporte.pack(side="bottom")
+        self.spinbox.pack(side="bottom")
 
 class imagenes(tk.Frame):
 
@@ -355,6 +367,7 @@ class imagenes(tk.Frame):
         label = tk.Label(self, text="Imagenes", font=controller.title_font)
         label.pack(side="top", fill="x", pady=10)
 
+        self.frameInferior = tk.Frame(self, height=300)
         self.encontrados = list()
         self.spinbox = None
 
@@ -365,8 +378,10 @@ class imagenes(tk.Frame):
         self.canvas.configure(yscrollcommand=self.vsb.set)
         self.frameCanvas.bind("<Configure>", self.onFrameConfigure)
 
-        self.botonRegreso = tk.Button(self, text="Volver al inicio", font= controller.regular_font,
+        self.botonRegreso = tk.Button(self.frameInferior, text="Volver al inicio", font= controller.regular_font,
                            command=lambda: controller.show_frame("menuPrincipal"))
+
+        self.textoFeedback = tk.Label(self, font=self.controller.regular_font)
 
     def onFrameConfigure(self, event):
         '''Reset the scroll region to encompass the inner frame'''
@@ -424,15 +439,16 @@ class imagenes(tk.Frame):
 
         #DEFINICION DEL SPINBOX DE REPORTES
         if self.spinbox==None:
-            self.spinbox = tk.Spinbox(self, values=tuple(range(1, len(self.encontrados)+1)), font=self.controller.regular_font)
-            self.textoFalsoPositivo = tk.Label(self, text="Algún problema? reporte falsos positivos seleccionando el número.", font=self.controller.regular_font)
+            self.spinbox = tk.Spinbox(self.frameInferior, values=tuple(range(1, len(self.encontrados)+1)), font=self.controller.regular_font)
+            self.textoFalsoPositivo = tk.Label(self.frameInferior, text="¿Algún problema? reporte falsos positivos seleccionando el número.", font=self.controller.regular_font)
 
-            self.botonEnviarReporte = tk.Button(self, text="Enviar", font= self.controller.regular_font,
+            self.botonEnviarReporte = tk.Button(self.frameInferior, text="Enviar", font= self.controller.regular_font,
                                  command=lambda: self.controller.reportarFalsoPositivo( self.encontrados[int(self.spinbox.get())-1][2] , None , "imagenes") )
                                  ###VER LA FUNCION LAMBDA PARA QUE EFECTIVAMENTE META LO NECESARIO PARA REPORTAR LA IMAGEN
-        self.textoFalsoPositivo.pack()
-        self.spinbox.pack()
-        self.botonEnviarReporte.pack(padx=10, pady=10)
+        self.textoFalsoPositivo.pack(side="left")
+        self.botonEnviarReporte.pack(padx=10, pady=10, side= "bottom")
+        self.spinbox.pack(side="bottom")
+        self.frameInferior.pack(fill="x")
 
 class desbloqueo(tk.Frame):
 
