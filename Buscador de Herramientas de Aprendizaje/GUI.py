@@ -158,6 +158,8 @@ class Aplicacion(tk.Tk):
 
                 self.frames["desbloqueo"].labelMateria.pack_forget()
                 self.frames["desbloqueo"].labelImagen.pack_forget()
+                self.frames["desbloqueo"].textoFeedback.pack_forget()
+                self.frames["desbloqueo"].frameInferior.pack_forget()
 
                 frame = self.frames["menuPrincipal"]
             frame.tkraise()
@@ -187,14 +189,21 @@ class Aplicacion(tk.Tk):
     def desbloquear(self, iterador):
         db = query.query()
         db.conectar()
-        for i in iterador:
-            print("Se encontro presionado\n", i)
-            if(len(i) == 4):
-                db.delete("WHERE StringBusqueda = \'"+i[2]+"\' AND Dominio = \'"+i[0]+ "\' AND Titulo = \'"+i[1]+"\'", tabla = 'ListaNegra')
-            elif(len(i) == 3):
-                db.delete("WHERE StringBusqueda = \'"+i[1]+"\' AND Dominio = \'"+i[0]+"\'", tabla = 'ListaNegraImagen')
-            else:
-                print("Deberiamos mandar un mensaje aca cuando no se selecciona nada c:")
+        iterador = list(iterador)
+        if len(iterador)>0:
+            for i in iterador:
+                print("Se encontro presionado\n", i)
+                if(len(i) == 4):
+                    db.delete("WHERE StringBusqueda = \'"+i[2]+"\' AND Dominio = \'"+i[0]+ "\' AND Titulo = \'"+i[1]+"\'", tabla = 'ListaNegra')
+                elif(len(i) == 3):
+                    db.delete("WHERE StringBusqueda = \'"+i[1]+"\' AND Dominio = \'"+i[0]+"\'", tabla = 'ListaNegraImagen')
+            self.frames["desbloqueo"].textoFeedback["text"] = "Listo, Herramienta(s) de aprendizaje desbloada(s)."
+            self.frames["desbloqueo"].textoFeedback["fg"] = "black"
+            self.frames["desbloqueo"].textoFeedback.pack(pady="5")
+        else:
+            self.frames["desbloqueo"].textoFeedback["text"] = "Error, usted no ha seleccionado ningún objeto."
+            self.frames["desbloqueo"].textoFeedback["fg"] = "red"
+            self.frames["desbloqueo"].textoFeedback.pack(pady="5")
         #Dale mauro aqui debes ocupar el iterador que te entra para poder desbloquear
         #el objeto de aprendizaje según sea materia (largo 4) o imagen (largo 3)
         #no pesques lo que hay en la última posicion de del iterador (es algo que ocupé antes...)
@@ -441,13 +450,15 @@ class desbloqueo(tk.Frame):
         self.canvas.configure(yscrollcommand=self.vsb.set)
         self.frameCanvas.bind("<Configure>", self.onFrameConfigure)
 
-        self.botonRegreso = tk.Button(self, text="Volver al inicio", font= controller.regular_font,
-                           command=lambda: controller.show_frame("menuPrincipal"))
-
-        self.botonDesbloqueo = tk.Button(self, text="Desbloquear seleccionados", font= self.controller.regular_font)
-
         self.labelMateria = tk.Label(self.frameCanvas, text="Materia bloqueada", font=self.controller.regular_font)
         self.labelImagen = tk.Label(self.frameCanvas, text="Imagenes bloqueadas", font=self.controller.regular_font)
+
+        self.frameInferior = tk.Frame(self)
+        self.textoFeedback = tk.Label(self.frameInferior, font=self.controller.regular_font)
+        self.botonRegreso = tk.Button(self.frameInferior, text="Volver al inicio", font= controller.regular_font,
+        command=lambda: controller.show_frame("menuPrincipal"))
+
+        self.botonDesbloqueo = tk.Button(self.frameInferior, text="Desbloquear seleccionados", font= self.controller.regular_font)
 
     def onFrameConfigure(self, event):
         '''Reset the scroll region to encompass the inner frame'''
@@ -456,6 +467,8 @@ class desbloqueo(tk.Frame):
     def mostrar(self):
         self.vsb.pack(side="right", fill="y")
         self.canvas.pack(side="top", fill="both", expand=True)
+        self.frameInferior.pack(side="bottom", fill="x")
+        self.botonDesbloqueo.pack(side="right", padx=10, pady=5)
         self.botonRegreso.pack(side="left" ,padx=10, pady=5)
 
         #Aqui se deben obtener los objetos que esten baneados
@@ -477,7 +490,10 @@ class desbloqueo(tk.Frame):
 
 
         baneados = list()
-
+        if len(materiaBaneada)==0:
+            self.labelMateria["text"]="No se encontró materia bloqueada."
+        else:
+            self.labelMateria["text"]="Materia bloqueada."
         self.labelMateria.pack()
 
         for i in range(len(materiaBaneada)):
@@ -493,6 +509,10 @@ class desbloqueo(tk.Frame):
 
             tk.Checkbutton(frame, text="¿Desbloquear?", font = self.controller.regular_font, variable = materiaBaneada[i][3], onvalue = 1, offvalue = 0).pack(side="right")
 
+        if len(imagenBaneada)==0:
+            self.labelImagen["text"]="No se encontraron imagenes bloqueadas."
+        else:
+            self.labelImagen["text"]="Imagenes bloqueadas."
         self.labelImagen.pack()
 
         for i in range(len(imagenBaneada)):
@@ -510,6 +530,8 @@ class desbloqueo(tk.Frame):
 
         self.botonDesbloqueo["command"] = command=lambda: self.controller.desbloquear(filter(lambda x: x[-1].get()==1, baneados))
         self.botonDesbloqueo.pack()
+
+
 
 
 
