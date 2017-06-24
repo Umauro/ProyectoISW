@@ -89,6 +89,25 @@ class query():
         except lite.DatabaseError:
             print("Error con la base de datos")
 
+
+    def delete(self, where ="", *args, **kwargs):
+        if(where == ""):
+            return None
+        try:
+            querySql = "DELETE FROM " + kwargs['tabla'] + " " + where +";"
+            print(querySql)
+            self.cur.execute(querySql)
+            self.con.commit()
+            print("Eliminado")
+
+        except AttributeError:
+            print("Error en la cantidad de atributos")
+        except TypeError:
+            print("Error en tipos de atributos")
+        except lite.OperationalError:
+            print("Error en la consulta sql")
+        except lite.DatabaseError:
+            print("Error con la base de datos")
 """
 Función: insert(*args, **kwargs)
 
