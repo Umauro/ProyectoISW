@@ -185,8 +185,16 @@ class Aplicacion(tk.Tk):
         #Fin añadir lo seleccionado
         #=======================================================================
     def desbloquear(self, iterador):
+        db = query.query()
+        db.conectar()
         for i in iterador:
             print("Se encontro presionado\n", i)
+            if(len(i) == 4):
+                db.delete("WHERE StringBusqueda = \'"+i[2]+"\' AND Dominio = \'"+i[0]+ "\' AND Titulo = \'"+i[1]+"\'", tabla = 'ListaNegra')
+            elif(len(i) == 3):
+                db.delete("WHERE StringBusqueda = \'"+i[1]+"\' AND Dominio = \'"+i[0]+"\'", tabla = 'ListaNegraImagen')
+            else:
+                print("Deberiamos mandar un mensaje aca cuando no se selecciona nada c:")
         #Dale mauro aqui debes ocupar el iterador que te entra para poder desbloquear
         #el objeto de aprendizaje según sea materia (largo 4) o imagen (largo 3)
         #no pesques lo que hay en la última posicion de del iterador (es algo que ocupé antes...)
@@ -457,13 +465,16 @@ class desbloqueo(tk.Frame):
         #texto de busqueda
         #materiaBaneada = [ [fuente, titulo, stringBusqueda], [fuente, titulo, stringBusqueda]]
         #imagenBaneada = [ [fuente, stringBusqueda], [fuente, stringBusqueda]]
-        materiaBaneada = list()
-        imagenBaneada = list()
 
-        materiaBaneada.append( ["url1", "Titulo1", "String1"] )
-        materiaBaneada.append( ["url2", "Titulo2", "String2"] )
-        imagenBaneada.append( ["url1", "String1"] )
-        imagenBaneada.append( ["url2", "String2"] )
+
+        db = query.query()
+        db.conectar()
+        materiaBaneada = db.select("Dominio, Titulo, StringBusqueda", "ORDER BY StringBusqueda", tabla = 'ListaNegra')
+        materiaBaneada = list(map(list,materiaBaneada))
+
+        imagenBaneada = db.select("Dominio, StringBusqueda", "ORDER BY StringBusqueda", tabla = 'ListaNegraImagen')
+        imagenBaneada = list(map(list,imagenBaneada))
+
 
         baneados = list()
 
