@@ -33,7 +33,7 @@ class Aplicacion(tk.Tk):
         container.grid_columnconfigure(0, weight=1)
 
         self.frames = {}
-        for F in (menuPrincipal, materia, imagenes):
+        for F in (menuPrincipal, materia, imagenes, desbloqueo):
             page_name = F.__name__
             frame = F(parent=container, controller=self)
             self.frames[page_name] = frame
@@ -55,15 +55,15 @@ class Aplicacion(tk.Tk):
             self.frames["menuPrincipal"].errores.pack_forget()
             if tipo[0]==0: #Materia
                 #Se debe borrar (dejar en blanco) cualquier txt previo
-
+                """
                 with open('Resultados/Materia.txt', 'w') as archivo:
                     pass
-
+                """
 
                 #===================================================================
                 #Inicio Busqueda de materia
                 #===================================================================
-
+                """
                 db = query.query()
                 db.conectar()
                 rows = db.select(tabla='Confiable')
@@ -88,6 +88,7 @@ class Aplicacion(tk.Tk):
                     d = runner.crawl(tablasSpider, start_urls = listaUrl)
                     d.addBoth(lambda _: reactor.crash())
                     reactor.run()
+                """
 
 
 
@@ -99,15 +100,15 @@ class Aplicacion(tk.Tk):
                 frame.mostrar()
 
             elif tipo[0]==1:#Caso de imagenes
-
+                """
                 with open('Resultados/Imagenes.txt', 'w') as archivo:
                     pass
-
+                """
 
                 #===================================================================
                 #Inicio Busqueda de imágenes
                 #===================================================================
-
+                """
                 db = query.query()
                 db.conectar()
                 rows = db.select(tabla='Confiable')
@@ -132,22 +133,35 @@ class Aplicacion(tk.Tk):
                     d = runner.crawl(imagenSpider, start_urls = listaUrl)
                     d.addBoth(lambda _: reactor.crash())
                     reactor.run()
-
+                """
                 #===================================================================
                 #FIN Busqueda de imágenes
                 #===================================================================
                 frame = self.frames["imagenes"]
                 frame.mostrar()
+            elif tipo=="desbloqueo":
+                frame = self.frames["desbloqueo"]
+                frame.mostrar()
             else:
                 #Se deben resetear los campos de los otros frames antes de volver
                 self.frames["materia"].texto.delete("1.0", tk.END)
                 self.frames["materia"].encontrados=list()
-
+                self.frames["materia"].textoFeedback.pack_forget()
 
                 for panel, titulo, url in self.frames["imagenes"].encontrados:
                     panel.pack_forget()
                     titulo.pack_forget()
                 self.frames["imagenes"].encontrados=list()
+                self.frames["imagenes"].textoFeedback.pack_forget()
+
+                for i in self.frames["desbloqueo"].listaFrames:
+                    i.pack_forget()
+                    del i
+
+                self.frames["desbloqueo"].labelMateria.pack_forget()
+                self.frames["desbloqueo"].labelImagen.pack_forget()
+                self.frames["desbloqueo"].textoFeedback.pack_forget()
+                self.frames["desbloqueo"].frameInferior.pack_forget()
 
                 frame = self.frames["menuPrincipal"]
             frame.tkraise()
@@ -171,9 +185,38 @@ class Aplicacion(tk.Tk):
             print("INSERTÉ ALGO")
             db.desconectar()
 
+        self.frames[TipoHerramienta].textoFeedback["text"] = "Listo, herramienta de aprendizaje bloqueada."
+        self.frames[TipoHerramienta].textoFeedback["fg"] = "black"
+        self.frames[TipoHerramienta].textoFeedback.pack(side="bottom", pady="5")
+
         #=======================================================================
         #Fin añadir lo seleccionado
         #=======================================================================
+    def desbloquear(self, iterador):
+        db = query.query()
+        db.conectar()
+        iterador = list(iterador)
+        if len(iterador)>0:
+            for i in iterador:
+                print("Se encontro presionado\n", i)
+                if(len(i) == 4):
+                    db.delete("WHERE StringBusqueda = \'"+i[2]+"\' AND Dominio = \'"+i[0]+ "\' AND Titulo = \'"+i[1]+"\'", tabla = 'ListaNegra')
+                elif(len(i) == 3):
+                    db.delete("WHERE StringBusqueda = \'"+i[1]+"\' AND Dominio = \'"+i[0]+"\'", tabla = 'ListaNegraImagen')
+            self.frames["desbloqueo"].textoFeedback["text"] = "Listo, Herramienta(s) de aprendizaje desbloada(s)."
+            self.frames["desbloqueo"].textoFeedback["fg"] = "black"
+            self.frames["desbloqueo"].textoFeedback.pack(pady="5")
+        else:
+            self.frames["desbloqueo"].textoFeedback["text"] = "Error, usted no ha seleccionado ningún objeto."
+            self.frames["desbloqueo"].textoFeedback["fg"] = "red"
+            self.frames["desbloqueo"].textoFeedback.pack(pady="5")
+        #Dale mauro aqui debes ocupar el iterador que te entra para poder desbloquear
+        #el objeto de aprendizaje según sea materia (largo 4) o imagen (largo 3)
+        #no pesques lo que hay en la última posicion de del iterador (es algo que ocupé antes...)
+        #el iterador te saca listas de la forma [url, fuente, string, <obj de tkinter>](si es materia)
+        #ve lo que imprime el for y vas a cachar altoque xD
+
+
 
 class menuPrincipal(tk.Frame):
 
@@ -199,6 +242,9 @@ class menuPrincipal(tk.Frame):
                                        command = lambda: controller.show_frame( opcionesBusqueda.curselection() , self.entrada.get() ))
         botonBusqueda.pack()
 
+        tk.Button(self, text="Gestionar lista negra", font = controller.regular_font,
+                  command = lambda: controller.show_frame( "desbloqueo" , "Nya" )).pack(pady=5)
+
         self.errores = tk.Label(self, font=controller.regular_font)
 
 
@@ -221,10 +267,14 @@ class materia(tk.Frame):
         self.canvas.configure(yscrollcommand=self.vsb.set)
         self.frameCanvas.bind("<Configure>", self.onFrameConfigure)
 
+        self.frameInferior = tk.Frame(self, height=300)
+
         self.texto = tk.Text(self.frameCanvas, font=controller.regular_font,  wrap='word', height= 100, width= 115)
 
-        self.botonRegreso = tk.Button(self, text="Volver al inicio", font= controller.regular_font,
+        self.botonRegreso = tk.Button(self.frameInferior, text="Volver al inicio", font= controller.regular_font,
                            command=lambda: controller.show_frame("menuPrincipal"))
+
+        self.textoFeedback = tk.Label(self, font=self.controller.regular_font)
 
     def onFrameConfigure(self, event):
         '''Reset the scroll region to encompass the inner frame'''
@@ -291,11 +341,11 @@ class materia(tk.Frame):
         #DEFINICION DEL SPINBOX DE REPORTES
         if self.spinbox==None:
             #self.spinbox = tk.Spinbox(self, values=tuple(range(1, len(self.encontrados)+1)), font=self.controller.regular_font)
-            self.spinbox = tk.Spinbox(self, font=self.controller.regular_font)
+            self.spinbox = tk.Spinbox(self.frameInferior, font=self.controller.regular_font)
 
-            self.textoFalsoPositivo = tk.Label(self, text="Algún problema? reporte falsos positivos seleccionando el número.", font=self.controller.regular_font)
+            self.textoFalsoPositivo = tk.Label(self.frameInferior, text="¿Algún problema? reporte falsos positivos seleccionando el número.", font=self.controller.regular_font)
 
-            self.botonEnviarReporte = tk.Button(self, text="Enviar", font= self.controller.regular_font,
+            self.botonEnviarReporte = tk.Button(self.frameInferior, text="Enviar", font= self.controller.regular_font,
             command=lambda: self.controller.reportarFalsoPositivo( self.encontrados[int(self.spinbox.get())-1][0] , self.encontrados[int(self.spinbox.get())-1][1] , "materia") )
 
         self.spinbox["values"]=tuple(range(1, len(self.encontrados)+1))
@@ -303,9 +353,11 @@ class materia(tk.Frame):
         self.texto.insert(tk.END, string)
         self.texto.pack(side="top",fill="both", expand=True)
 
-        self.textoFalsoPositivo.pack()
-        self.spinbox.pack()
-        self.botonEnviarReporte.pack(padx=10, pady=10)
+        self.frameInferior.pack(fill="both")
+
+        self.textoFalsoPositivo.pack(side="left", padx="5", fill="x", expand=True)
+        self.botonEnviarReporte.pack(side="bottom")
+        self.spinbox.pack(side="bottom")
 
 class imagenes(tk.Frame):
 
@@ -315,6 +367,7 @@ class imagenes(tk.Frame):
         label = tk.Label(self, text="Imagenes", font=controller.title_font)
         label.pack(side="top", fill="x", pady=10)
 
+        self.frameInferior = tk.Frame(self, height=300)
         self.encontrados = list()
         self.spinbox = None
 
@@ -325,8 +378,10 @@ class imagenes(tk.Frame):
         self.canvas.configure(yscrollcommand=self.vsb.set)
         self.frameCanvas.bind("<Configure>", self.onFrameConfigure)
 
-        self.botonRegreso = tk.Button(self, text="Volver al inicio", font= controller.regular_font,
+        self.botonRegreso = tk.Button(self.frameInferior, text="Volver al inicio", font= controller.regular_font,
                            command=lambda: controller.show_frame("menuPrincipal"))
+
+        self.textoFeedback = tk.Label(self, font=self.controller.regular_font)
 
     def onFrameConfigure(self, event):
         '''Reset the scroll region to encompass the inner frame'''
@@ -384,15 +439,118 @@ class imagenes(tk.Frame):
 
         #DEFINICION DEL SPINBOX DE REPORTES
         if self.spinbox==None:
-            self.spinbox = tk.Spinbox(self, values=tuple(range(1, len(self.encontrados)+1)), font=self.controller.regular_font)
-            self.textoFalsoPositivo = tk.Label(self, text="Algún problema? reporte falsos positivos seleccionando el número.", font=self.controller.regular_font)
+            self.spinbox = tk.Spinbox(self.frameInferior, values=tuple(range(1, len(self.encontrados)+1)), font=self.controller.regular_font)
+            self.textoFalsoPositivo = tk.Label(self.frameInferior, text="¿Algún problema? reporte falsos positivos seleccionando el número.", font=self.controller.regular_font)
 
-            self.botonEnviarReporte = tk.Button(self, text="Enviar", font= self.controller.regular_font,
+            self.botonEnviarReporte = tk.Button(self.frameInferior, text="Enviar", font= self.controller.regular_font,
                                  command=lambda: self.controller.reportarFalsoPositivo( self.encontrados[int(self.spinbox.get())-1][2] , None , "imagenes") )
                                  ###VER LA FUNCION LAMBDA PARA QUE EFECTIVAMENTE META LO NECESARIO PARA REPORTAR LA IMAGEN
-        self.textoFalsoPositivo.pack()
-        self.spinbox.pack()
-        self.botonEnviarReporte.pack(padx=10, pady=10)
+        self.textoFalsoPositivo.pack(side="left")
+        self.botonEnviarReporte.pack(padx=10, pady=10, side= "bottom")
+        self.spinbox.pack(side="bottom")
+        self.frameInferior.pack(fill="x")
+
+class desbloqueo(tk.Frame):
+
+    def __init__(self, parent, controller):
+        tk.Frame.__init__(self, parent)
+        self.controller = controller
+        label = tk.Label(self, text="Desbloquear objeto de aprendizaje de la lista negra", font=controller.title_font)
+        label.pack(side="top", fill="x", pady=10)
+
+        self.listaFrames = list()
+        self.canvas = tk.Canvas(self, borderwidth=0, background="#ffffff")
+        self.frameCanvas = tk.Frame(self.canvas, background="#ffffff")
+        self.canvas.create_window((4,4), anchor="nw" ,window=self.frameCanvas)
+        self.vsb = tk.Scrollbar(self, orient="vertical", command=self.canvas.yview)
+        self.canvas.configure(yscrollcommand=self.vsb.set)
+        self.frameCanvas.bind("<Configure>", self.onFrameConfigure)
+
+        self.labelMateria = tk.Label(self.frameCanvas, text="Materia bloqueada", font=self.controller.regular_font)
+        self.labelImagen = tk.Label(self.frameCanvas, text="Imagenes bloqueadas", font=self.controller.regular_font)
+
+        self.frameInferior = tk.Frame(self)
+        self.textoFeedback = tk.Label(self.frameInferior, font=self.controller.regular_font)
+        self.botonRegreso = tk.Button(self.frameInferior, text="Volver al inicio", font= controller.regular_font,
+        command=lambda: controller.show_frame("menuPrincipal"))
+
+        self.botonDesbloqueo = tk.Button(self.frameInferior, text="Desbloquear seleccionados", font= self.controller.regular_font)
+
+    def onFrameConfigure(self, event):
+        '''Reset the scroll region to encompass the inner frame'''
+        self.canvas.configure(scrollregion=self.canvas.bbox("all"))
+
+    def mostrar(self):
+        self.vsb.pack(side="right", fill="y")
+        self.canvas.pack(side="top", fill="both", expand=True)
+        self.frameInferior.pack(side="bottom", fill="x")
+        self.botonDesbloqueo.pack(side="right", padx=10, pady=5)
+        self.botonRegreso.pack(side="left" ,padx=10, pady=5)
+
+        #Aqui se deben obtener los objetos que esten baneados
+        #Si eran materia deberian tener (fuente, titulo, stringBusqueda)
+        #Si es una imagen, (fuente, stringBusqueda)
+        #Estos objetos espero que esten en 2 listas de la forma, ojalá que esten ordenados por
+        #texto de busqueda
+        #materiaBaneada = [ [fuente, titulo, stringBusqueda], [fuente, titulo, stringBusqueda]]
+        #imagenBaneada = [ [fuente, stringBusqueda], [fuente, stringBusqueda]]
+
+
+        db = query.query()
+        db.conectar()
+        materiaBaneada = db.select("Dominio, Titulo, StringBusqueda", "ORDER BY StringBusqueda", tabla = 'ListaNegra')
+        materiaBaneada = list(map(list,materiaBaneada))
+
+        imagenBaneada = db.select("Dominio, StringBusqueda", "ORDER BY StringBusqueda", tabla = 'ListaNegraImagen')
+        imagenBaneada = list(map(list,imagenBaneada))
+
+
+        baneados = list()
+        if len(materiaBaneada)==0:
+            self.labelMateria["text"]="No se encontró materia bloqueada."
+        else:
+            self.labelMateria["text"]="Materia bloqueada."
+        self.labelMateria.pack()
+
+        for i in range(len(materiaBaneada)):
+            materiaBaneada[i].append(tk.IntVar())
+            frame = tk.Frame(self.frameCanvas)
+            self.listaFrames.append(frame)
+            frame.pack(fill="x", pady="2.5")
+            texto = tk.Text(frame, font=self.controller.regular_font,  wrap='word', height= 3, width= 100)
+            string = "Texto de busqueda: "+str(materiaBaneada[i][2])+"\nTitulo: "+str(materiaBaneada[i][1])+"\nURL Fuente: "+str(materiaBaneada[i][0])+'\n'
+            texto.insert(tk.END, string)
+            texto.pack(side="left",padx=10)
+            baneados.append(materiaBaneada[i])
+
+            tk.Checkbutton(frame, text="¿Desbloquear?", font = self.controller.regular_font, variable = materiaBaneada[i][3], onvalue = 1, offvalue = 0).pack(side="right")
+
+        if len(imagenBaneada)==0:
+            self.labelImagen["text"]="No se encontraron imagenes bloqueadas."
+        else:
+            self.labelImagen["text"]="Imagenes bloqueadas."
+        self.labelImagen.pack()
+
+        for i in range(len(imagenBaneada)):
+            imagenBaneada[i].append(tk.IntVar())
+            frame = tk.Frame(self.frameCanvas)
+            self.listaFrames.append(frame)
+            frame.pack(fill="x", pady="2.5")
+            texto = tk.Text(frame, font=self.controller.regular_font,  wrap='word', height= 2, width= 100)
+            string = "Texto de busqueda: "+str(imagenBaneada[i][1])+"\nURL Fuente: "+str(imagenBaneada[i][0])+'\n'
+            texto.insert(tk.END, string)
+            texto.pack(side="left",padx=10)
+            baneados.append(imagenBaneada[i])
+
+            tk.Checkbutton(frame, text="¿Desbloquear?", font = self.controller.regular_font, variable = imagenBaneada[i][2], onvalue = 1, offvalue = 0).pack(side="right")
+
+        self.botonDesbloqueo["command"] = command=lambda: self.controller.desbloquear(filter(lambda x: x[-1].get()==1, baneados))
+        self.botonDesbloqueo.pack()
+
+
+
+
+
 
 app = Aplicacion()
 app.geometry("1280x720")

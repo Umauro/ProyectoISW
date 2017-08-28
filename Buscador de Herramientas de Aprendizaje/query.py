@@ -40,13 +40,17 @@ class query():
                 querySql = "INSERT INTO " + kwargs['tabla'] +"(StringBusqueda, Dominio, tipoHerramienta) VALUES(\'"+kwargs['stringBusqueda']+"\',\'"+ kwargs['dominio'] +"\',\'"+ kwargs['tipoHerramienta'] + "\');"
                 self.cur.execute(querySql)
                 self.con.commit()
+            elif(kwargs['tabla'] == 'Cache'):
+                querySql = "INSERT INTO " + kwargs['tabla'] + "(StringBusqueda, Dominio, URL) VALUES(\'"+kwargs['stringBusqueda']+"\',\'"+ kwargs['dominio'] +"\',\'"+ kwargs['url'] + "\');"
+                self.cur.execute(querySql)
+                self.con.commit()
 
         except AttributeError:
             print("Error en la cantidad de atributos")
         except TypeError:
             print("Error en tipos de atributos")
         except lite.OperationalError:
-            print("Error en la consulta sql")
+            print("Error en la consulta sql insert")
         except lite.DatabaseError:
             print("Error con la base de datos"+str(lite.DatabaseError[0]))
         except KeyError:
@@ -68,7 +72,7 @@ class query():
         except TypeError:
             print("Error en tipos de atributos")
         except lite.OperationalError:
-            print("Error en la consulta sql")
+            print("Error en la consulta sql select")
         except lite.DatabaseError:
             print("Error con la base de datos: ")
         return rows
@@ -89,6 +93,25 @@ class query():
         except lite.DatabaseError:
             print("Error con la base de datos")
 
+
+    def delete(self, where ="", *args, **kwargs):
+        if(where == ""):
+            return None
+        try:
+            querySql = "DELETE FROM " + kwargs['tabla'] + " " + where +";"
+            print(querySql)
+            self.cur.execute(querySql)
+            self.con.commit()
+            print("Eliminado")
+
+        except AttributeError:
+            print("Error en la cantidad de atributos")
+        except TypeError:
+            print("Error en tipos de atributos")
+        except lite.OperationalError:
+            print("Error en la consulta sql")
+        except lite.DatabaseError:
+            print("Error con la base de datos")
 """
 Función: insert(*args, **kwargs)
 
