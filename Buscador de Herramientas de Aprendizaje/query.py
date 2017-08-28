@@ -66,6 +66,7 @@ class query():
             print(querySql)
             self.cur.execute(querySql)
             rows = self.cur.fetchall()
+            return rows
 
         except AttributeError:
             print("Error en la cantidad de atributos")
@@ -75,7 +76,7 @@ class query():
             print("Error en la consulta sql select")
         except lite.DatabaseError:
             print("Error con la base de datos: ")
-        return rows
+
 
 
     def update(self, *args, **kwargs):

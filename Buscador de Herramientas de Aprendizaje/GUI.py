@@ -55,15 +55,15 @@ class Aplicacion(tk.Tk):
             self.frames["menuPrincipal"].errores.pack_forget()
             if tipo[0]==0: #Materia
                 #Se debe borrar (dejar en blanco) cualquier txt previo
-                """
+
                 with open('Resultados/Materia.txt', 'w') as archivo:
                     pass
-                """
+
 
                 #===================================================================
                 #Inicio Busqueda de materia
                 #===================================================================
-                """
+
                 db = query.query()
                 db.conectar()
                 rows = db.select(tabla='Confiable')
@@ -88,7 +88,7 @@ class Aplicacion(tk.Tk):
                     d = runner.crawl(tablasSpider, start_urls = listaUrl)
                     d.addBoth(lambda _: reactor.crash())
                     reactor.run()
-                """
+
 
 
 
@@ -100,15 +100,15 @@ class Aplicacion(tk.Tk):
                 frame.mostrar()
 
             elif tipo[0]==1:#Caso de imagenes
-                """
+
                 with open('Resultados/Imagenes.txt', 'w') as archivo:
                     pass
-                """
+
 
                 #===================================================================
                 #Inicio Busqueda de imágenes
                 #===================================================================
-                """
+
                 db = query.query()
                 db.conectar()
                 rows = db.select(tabla='Confiable')
@@ -133,7 +133,7 @@ class Aplicacion(tk.Tk):
                     d = runner.crawl(imagenSpider, start_urls = listaUrl)
                     d.addBoth(lambda _: reactor.crash())
                     reactor.run()
-                """
+                
                 #===================================================================
                 #FIN Busqueda de imágenes
                 #===================================================================
